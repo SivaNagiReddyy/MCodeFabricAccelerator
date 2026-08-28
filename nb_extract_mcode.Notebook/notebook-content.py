@@ -1,40 +1,16 @@
 # Fabric notebook source
 
-# METADATA ********************
-
-# META {
-# META   "kernel_info": {
-# META     "name": "synapse_pyspark"
-# META   },
-# META   "dependencies": {
-# META     "lakehouse": {
-# META       "default_lakehouse": "31dbc1ae-cdad-4fb1-803e-41bc959a88d2",
-# META       "default_lakehouse_name": "HYDRA_SILVER_LK",
-# META       "default_lakehouse_workspace_id": "53747e8d-990c-48d0-a357-52aa3cf64833"
-# META     }
-# META   }
-# META }
 
 # MARKDOWN ********************
 
 # ## nb_extract_mcode
-#
-# Extracts every Power Query (**M**) query from a semantic model into one file
+# # Extracts every Power Query (**M**) query from a semantic model into one file
 # per query, named after the query:  `<output_dir>/<QueryName>.m`
-#
-# Model-agnostic - pass any semantic model name. It pulls the model definition
+# # Model-agnostic - pass any semantic model name. It pulls the model definition
 # as TMSL/BIM (via Semantic Link) and reads:
 #   * `model.expressions[]`  - parameters, functions, shared/staging queries
 #   * `model.tables[].partitions[]` where `source.type == "m"`  - table queries
-#
-# Direct Lake / calculated / DAX partitions have no M and are skipped.
-
-# METADATA ********************
-
-# META {
-# META   "language": "markdown",
-# META   "language_group": "synapse_pyspark"
-# META }
+# # Direct Lake / calculated / DAX partitions have no M and are skipped.
 
 # PARAMETERS CELL ********************
 
