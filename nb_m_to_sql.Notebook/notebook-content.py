@@ -1,25 +1,10 @@
 # Fabric notebook source
 
-# METADATA ********************
-
-# META {
-# META   "kernel_info": {
-# META     "name": "synapse_pyspark"
-# META   },
-# META   "dependencies": {
-# META     "lakehouse": {
-# META       "default_lakehouse": "8d96b1a2-1764-46da-9ecf-05128fb61f2e",
-# META       "default_lakehouse_name": "HYDRA_BRONZE_LK",
-# META       "default_lakehouse_workspace_id": "53747e8d-990c-48d0-a357-52aa3cf64833"
-# META     }
-# META   }
-# META }
 
 # MARKDOWN ********************
 
 # ## nb_m_to_sql  -  Agent 2: M -> Spark SQL, with medallion layering
-#
-# Reads the Power Query (M) files produced by **nb_extract_mcode**
+# # Reads the Power Query (M) files produced by **nb_extract_mcode**
 # (`<m_lakehouse>/<m_subdir>/*.m`), runs a **deepagents** agent (LLM via
 # `langchain-openai`) that:
 #   1. reads each M query end-to-end,
@@ -29,19 +14,10 @@
 #   3. converts the transformation logic to a single `spark.sql()`-executable
 #      `SELECT` statement,
 #   4. writes `silver/<table>.sql` / `gold/<table>.sql` + `layering.md`.
-#
-# The `.sql` files are written to `<out_lakehouse>/<sql_out_subdir>/{silver,gold}/`
+# # The `.sql` files are written to `<out_lakehouse>/<sql_out_subdir>/{silver,gold}/`
 # and are consumed as-is by **nb_generic_layer_load**.
-#
-# Requires the **py-packages** environment (deepagents, langchain-openai) attached,
+# # Requires the **py-packages** environment (deepagents, langchain-openai) attached,
 # plus an LLM endpoint + key (params below).
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
 
 # PARAMETERS CELL ********************
 
