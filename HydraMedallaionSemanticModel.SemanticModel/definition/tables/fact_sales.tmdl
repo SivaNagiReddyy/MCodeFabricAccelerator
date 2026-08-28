@@ -1,0 +1,331 @@
+table fact_sales
+	lineageTag: 30124792-f436-4fcb-90a9-f1dd73b3ddfc
+	sourceLineageTag: [sales].[fact_sales]
+
+	measure 'Total Sales' = SUM(fact_sales[NetAmount])
+		lineageTag: 5049e632-367b-4782-85dc-5f5b629f5f3f
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Orders' = DISTINCTCOUNT(fact_sales[SalesOrderID])
+		formatString: 0
+		lineageTag: e8fe0916-9457-4d96-8eff-3350e1b4432f
+
+		changedProperty = Name
+
+	measure 'Total Qty' = SUM(fact_sales[OrderQty])
+		formatString: 0
+		lineageTag: 6f75e0e6-ef26-4dfd-8120-05812b9d3276
+
+		changedProperty = Name
+
+	measure 'Avg Order Value' = DIVIDE([Total Sales], [Total Orders])
+		lineageTag: 6f2eb37d-6cd7-4d88-b8e7-0b404c9dfcf2
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Discount' = SUM(fact_sales[DiscountAmount])
+		lineageTag: ddf483e8-23f4-417f-a21f-b7927658b92f
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Discount %' = DIVIDE([Total Discount], [Total Sales] + [Total Discount])
+		lineageTag: 417f09c6-e39c-4ded-b888-095d5f7d3f97
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Line Total' = SUM(fact_sales[LineTotal])
+		lineageTag: 60b89263-39bf-417d-8812-ce0ab46176b7
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Distinct Customers' = DISTINCTCOUNT(fact_sales[CustomerID])
+		formatString: 0
+		lineageTag: de1e765b-4b8c-46df-a1b9-94f1fc8f4f21
+
+		changedProperty = Name
+
+	measure 'Distinct Products Sold' = DISTINCTCOUNT(fact_sales[ProductID])
+		formatString: 0
+		lineageTag: f05ae8c6-94f3-4289-bdc2-bd6985282e49
+
+		changedProperty = Name
+
+	column SalesOrderID
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c059ceb-435a-45a6-ad9a-31cb588dc5c5
+		sourceLineageTag: SalesOrderID
+		summarizeBy: count
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderDetailID
+		dataType: int64
+		formatString: 0
+		lineageTag: 10ed24af-e8e0-4746-a342-fab081e6a211
+		sourceLineageTag: SalesOrderDetailID
+		summarizeBy: count
+		sourceColumn: SalesOrderDetailID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQty
+		dataType: int64
+		formatString: 0
+		lineageTag: da8390a8-4a18-4bff-9f50-9e272d502566
+		sourceLineageTag: OrderQty
+		summarizeBy: sum
+		sourceColumn: OrderQty
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		lineageTag: 87c85ddb-051c-4a0e-ba0b-4b68f82ce01c
+		sourceLineageTag: ProductID
+		summarizeBy: count
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: double
+		lineageTag: 3adfcd6c-f354-408b-947f-5e1f5364658d
+		sourceLineageTag: UnitPrice
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column UnitPriceDiscount
+		dataType: double
+		lineageTag: ed6923ce-e332-45ef-8378-4dfc58c907fe
+		sourceLineageTag: UnitPriceDiscount
+		summarizeBy: sum
+		sourceColumn: UnitPriceDiscount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LineTotal
+		dataType: double
+		lineageTag: 27894226-4b37-4735-9e3b-566d0c0995e2
+		sourceLineageTag: LineTotal
+		summarizeBy: sum
+		sourceColumn: LineTotal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OrderDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 41a6f9ac-663a-4ba6-adef-28eabb9b990d
+		sourceLineageTag: OrderDate
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column DueDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 193d1040-6383-476f-82bf-2fe8bc795f4a
+		sourceLineageTag: DueDate
+		summarizeBy: none
+		sourceColumn: DueDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6bf5e3ea-8efb-4e5f-93c4-f8af5bd113eb
+		sourceLineageTag: ShipDate
+		summarizeBy: none
+		sourceColumn: ShipDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnlineOrderFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f635c7c3-398f-428a-80ba-7d9f83ae86fa
+		sourceLineageTag: OnlineOrderFlag
+		summarizeBy: none
+		sourceColumn: OnlineOrderFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderNumber
+		dataType: string
+		lineageTag: fb503063-9065-4bf0-a135-c1c6755a3acc
+		sourceLineageTag: SalesOrderNumber
+		summarizeBy: none
+		sourceColumn: SalesOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: 01c2cb7b-c828-4584-84c1-7a20c0d37e0d
+		sourceLineageTag: CustomerID
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipToAddressID
+		dataType: int64
+		formatString: 0
+		lineageTag: d70bd6da-9561-4735-84cb-64289158d328
+		sourceLineageTag: ShipToAddressID
+		summarizeBy: count
+		sourceColumn: ShipToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column BillToAddressID
+		dataType: int64
+		formatString: 0
+		lineageTag: da9c89bf-e1f2-466c-b8a8-ad617751dba0
+		sourceLineageTag: BillToAddressID
+		summarizeBy: count
+		sourceColumn: BillToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipMethod
+		dataType: string
+		lineageTag: 0cd1d7ee-57f4-41ca-8144-2b4c7c644a35
+		sourceLineageTag: ShipMethod
+		summarizeBy: none
+		sourceColumn: ShipMethod
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrentListPrice
+		dataType: double
+		lineageTag: c827b875-ab12-4191-8625-fa369c262980
+		sourceLineageTag: CurrentListPrice
+		summarizeBy: sum
+		sourceColumn: CurrentListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductCategoryID
+		dataType: int64
+		formatString: 0
+		lineageTag: 22283f7d-23fe-49bf-87f6-e9bd60fbbb01
+		sourceLineageTag: ProductCategoryID
+		summarizeBy: count
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerName
+		dataType: string
+		lineageTag: 99154385-7904-49de-8f11-d2dccb2dfc11
+		sourceLineageTag: CustomerName
+		summarizeBy: none
+		sourceColumn: CustomerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerType
+		dataType: string
+		lineageTag: 4e107eec-3806-4eb4-a7a5-f0632809a9d4
+		sourceLineageTag: CustomerType
+		summarizeBy: none
+		sourceColumn: CustomerType
+
+		annotation SummarizationSetBy = Automatic
+
+	column NetAmount
+		dataType: double
+		lineageTag: 0c4e1193-a160-4fcb-9487-433e579127c2
+		sourceLineageTag: NetAmount
+		summarizeBy: sum
+		sourceColumn: NetAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DiscountAmount
+		dataType: double
+		lineageTag: f973c295-d378-4e6b-882a-e73029fae1fb
+		sourceLineageTag: DiscountAmount
+		summarizeBy: sum
+		sourceColumn: DiscountAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PriceVarianceVsListPrice
+		dataType: double
+		lineageTag: ed8393c0-a524-4be5-833e-6014f07a09c3
+		sourceLineageTag: PriceVarianceVsListPrice
+		summarizeBy: sum
+		sourceColumn: PriceVarianceVsListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OrderChannel
+		dataType: string
+		lineageTag: 9bdc8bc8-3a25-437f-ad30-c6dd323c857d
+		sourceLineageTag: OrderChannel
+		summarizeBy: none
+		sourceColumn: OrderChannel
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsShipBillSame
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0e4ca19b-d778-4c7f-a9a0-0f83773272f6
+		sourceLineageTag: IsShipBillSame
+		summarizeBy: none
+		sourceColumn: IsShipBillSame
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderStatusDescription
+		dataType: string
+		lineageTag: 826d0113-d70c-44c0-b483-54d0420af941
+		sourceLineageTag: OrderStatusDescription
+		summarizeBy: none
+		sourceColumn: OrderStatusDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_sales = entity
+		mode: directLake
+		source
+			entityName: fact_sales
+			schemaName: sales
+			expressionSource: 'DirectLake - HYDRA_GOLD_LK'
+

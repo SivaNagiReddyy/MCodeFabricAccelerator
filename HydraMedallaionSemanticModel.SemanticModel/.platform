@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "HydraMedallaionSemanticModel"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "35f56698-26d5-878f-4ad9-04f5b5db5807"
+  }
+}
