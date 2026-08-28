@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Environment",
+    "displayName": "py-packages",
+    "description": "Environment"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "352320a0-af49-936c-45f7-70468e7442df"
+  }
+}
