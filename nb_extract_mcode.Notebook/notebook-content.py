@@ -13,10 +13,11 @@
 
 # PARAMETERS CELL ********************
 
-dataset    = "HydraReport"        # semantic model: display name or GUID
-workspace  = ""                   # blank = current workspace; else name or GUID
-output_dir = "Files/m_extract"    # path under the default lakehouse, or a full abfss:// path
-overwrite  = True
+dataset          = "HydraReport"       # semantic model: display name or GUID
+workspace         = ""                  # blank = current workspace; else name or GUID (for the model fetch)
+target_lakehouse  = "HYDRA_BRONZE_LK"   # lakehouse to write the .m files into
+output_subdir     = "Files/m_extract"   # path under that lakehouse
+overwrite         = True
 
 # METADATA ********************
 
@@ -103,26 +104,16 @@ def extract_m(doc):
 # CELL ********************
 
 # ---- 3. write one <QueryName>.m per query -------------------------------
-import notebookutils
-
 queries = {k: v for k, v in extract_m(model_doc).items() if v and v.strip()}
 if not queries:
     raise ValueError("no M queries found in '{}' (Direct Lake / DAX-only model?)".format(dataset))
 
-# resolve output_dir to an absolute abfss path (a bare 'Files/...' relative path
-# does NOT reliably bind to the lakehouse from notebookutils.fs.put)
-base = output_dir.strip().rstrip("/")
-if base and not base.startswith("abfss://"):
-    lh = notebookutils.runtime.context.get("defaultLakehouseName")
-    if not lh:
-        raise RuntimeError(
-            "No default lakehouse attached. Attach one (Explorer > Lakehouses > Add), "
-            "or set output_dir to a full abfss:// path.")
-    abfss = notebookutils.lakehouse.get(lh)["properties"]["abfsPath"]
-    sub = base if base.lower().startswith("files") else "Files/" + base
-    base = "{}/{}".format(abfss, sub)
-if base:
-    notebookutils.fs.mkdirs(base)
+# resolve the target lakehouse by name -> absolute abfss path
+# (same pattern as nb_generic_layer_load / nb_log_collector; a bare 'Files/...'
+#  path does NOT reliably bind to the lakehouse from fs.put)
+abfss = mssparkutils.lakehouse.get(target_lakehouse)["properties"]["abfsPath"]
+base = "{}/{}".format(abfss, output_subdir.strip().strip("/"))
+mssparkutils.fs.mkdirs(base)
 
 _bad = re.compile(r'[\\/:*?"<>|\r\n\t]+')
 rows = []
@@ -130,15 +121,12 @@ for name in sorted(queries):
     safe = _bad.sub("_", name).strip() or "_"
     code = queries[name]
     code = code if code.endswith("\n") else code + "\n"
-    if base:
-        notebookutils.fs.put("{}/{}.m".format(base, safe), code, overwrite)
+    mssparkutils.fs.put("{}/{}.m".format(base, safe), code, overwrite)
     rows.append({"query": name, "file": safe + ".m", "lines": len(code.splitlines())})
 
 import pandas as pd
 summary = pd.DataFrame(rows)
-print("{} M quer{}  {}".format(
-    len(rows), "y" if len(rows) == 1 else "ies",
-    "-> " + base if base else "(output_dir blank; not written)"))
+print("{} M quer{}  ->  {}".format(len(rows), "y" if len(rows) == 1 else "ies", base))
 display(summary)
 
 # METADATA ********************
