@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Warehouse",
+    "displayName": "Hydra_DW",
+    "description": ""
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4ab34be4-c5f6-9a57-47f5-a8c52b79c72f"
+  }
+}
