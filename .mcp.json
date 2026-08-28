@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "fabric": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@microsoft/fabric-mcp@latest",
+        "server",
+        "start",
+        "--mode",
+        "all"
+      ]
+    }
+  }
+}
