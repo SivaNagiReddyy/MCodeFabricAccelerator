@@ -1,0 +1,314 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "sqlReaderQuery": {
+              "value": "@concat(\n'SELECT *\nFROM [metadata].[pipeline_control]\nWHERE layer = ''',\npipeline().parameters.Layer,\n''' AND is_active = 1'\n)",
+              "type": "Expression"
+            },
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00"
+          },
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "linkedService": {
+              "name": "Hydra_DW",
+              "properties": {
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "4ab34be4-c5f6-9a57-47f5-a8c52b79c72f",
+                  "endpoint": "uruhe73zofbevgbxiasvwhbb4u-rv7hiuymthieri2xkkvdz5sigm.datawarehouse.fabric.microsoft.com",
+                  "workspaceId": "00000000-0000-0000-0000-000000000000"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          },
+          "firstRowOnly": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup Silver Control Rows",
+        "dependsOn": []
+      },
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 2,
+          "items": {
+            "value": "@activity('Lookup Silver Control Rows').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": "7f4412d0-eda2-84c1-4129-b1f17ef3e571",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "parameters": {
+                  "control_id": {
+                    "value": {
+                      "value": "@item().control_id",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "run_id": {
+                    "value": {
+                      "value": "@pipeline().RunId",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "sql_file_path": {
+                    "value": {
+                      "value": "@item().sql_file_path",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "sql_lakehouse": {
+                    "value": {
+                      "value": "@item().sql_lakehouse",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "target_lakehouse": {
+                    "value": {
+                      "value": "@item().target_lakehouse",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "target_schema": {
+                    "value": {
+                      "value": "@item().target_schema",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "target_table": {
+                    "value": {
+                      "value": "@item().target_table",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "load_type": {
+                    "value": {
+                      "value": "@item().load_type",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "key_columns": {
+                    "value": {
+                      "value": "@item().key_columns",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "incremental_column": {
+                    "value": {
+                      "value": "@item().incremental_column",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "watermark_value": {
+                    "value": {
+                      "value": "@item().watermark_value",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  }
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Load Silver Object",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "ForEach Silver Object",
+        "dependsOn": [
+          {
+            "activity": "Lookup Silver Control Rows",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "76fbab8a-7b98-9ed1-478c-1c71419755ca",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "run_id": {
+              "value": {
+                "value": "@pipeline().RunId",
+                "type": "Expression"
+              },
+              "type": "string"
+            },
+            "pipeline_name": {
+              "value": {
+                "value": "@pipeline().PipelineName",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Collect Run Results",
+        "dependsOn": [
+          {
+            "activity": "ForEach Silver Object",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Script",
+        "typeProperties": {
+          "scripts": [
+            {
+              "text": {
+                "value": "@activity('Collect Run Results').output.result.exitValue",
+                "type": "Expression"
+              },
+              "type": "Query"
+            }
+          ],
+          "scriptBlockExecutionTimeout": "02:00:00"
+        },
+        "linkedService": {
+          "name": "Hydra_DW",
+          "properties": {
+            "type": "DataWarehouse",
+            "typeProperties": {
+              "artifactId": "4ab34be4-c5f6-9a57-47f5-a8c52b79c72f",
+              "endpoint": "uruhe73zofbevgbxiasvwhbb4u-rv7hiuymthieri2xkkvdz5sigm.datawarehouse.fabric.microsoft.com",
+              "workspaceId": "00000000-0000-0000-0000-000000000000"
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Log All Runs",
+        "dependsOn": [
+          {
+            "activity": "Collect Run Results",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Script",
+        "typeProperties": {
+          "scripts": [
+            {
+              "text": {
+                "value": "EXEC metadata.usp_apply_pipeline_results @parent_run_id = '@{pipeline().RunId}';",
+                "type": "Expression"
+              },
+              "type": "Query"
+            }
+          ],
+          "scriptBlockExecutionTimeout": "02:00:00"
+        },
+        "linkedService": {
+          "name": "Hydra_DW",
+          "properties": {
+            "type": "DataWarehouse",
+            "typeProperties": {
+              "artifactId": "4ab34be4-c5f6-9a57-47f5-a8c52b79c72f",
+              "endpoint": "uruhe73zofbevgbxiasvwhbb4u-rv7hiuymthieri2xkkvdz5sigm.datawarehouse.fabric.microsoft.com",
+              "workspaceId": "00000000-0000-0000-0000-000000000000"
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Apply Results",
+        "dependsOn": [
+          {
+            "activity": "Log All Runs",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Fail",
+        "typeProperties": {
+          "message": {
+            "value": "@concat('One or more Silver rows failed. Run: ', pipeline().RunId)",
+            "type": "Expression"
+          },
+          "errorCode": "404"
+        },
+        "name": "Fail Pipeline On Row Failure",
+        "dependsOn": [
+          {
+            "activity": "Log All Runs",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "Layer": {
+        "type": "string",
+        "defaultValue": "Silver"
+      }
+    }
+  }
+}
