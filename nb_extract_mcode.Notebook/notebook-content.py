@@ -1,22 +1,42 @@
 # Fabric notebook source
 
+# METADATA ********************
+
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "31dbc1ae-cdad-4fb1-803e-41bc959a88d2",
+# META       "default_lakehouse_name": "HYDRA_SILVER_LK",
+# META       "default_lakehouse_workspace_id": "53747e8d-990c-48d0-a357-52aa3cf64833"
+# META     }
+# META   }
+# META }
 
 # MARKDOWN ********************
 
 # ## nb_extract_mcode
-# # Extracts every Power Query (**M**) query from a semantic model into one file
-# per query, named after the query:  `<output_dir>/<QueryName>.m`
-# # Model-agnostic - pass any semantic model name. It pulls the model definition
-# as TMSL/BIM (via Semantic Link) and reads:
-#   * `model.expressions[]`  - parameters, functions, shared/staging queries
-#   * `model.tables[].partitions[]` where `source.type == "m"`  - table queries
-# # Direct Lake / calculated / DAX partitions have no M and are skipped.
+# Extracts every Power Query (M) query from a semantic model into one file per
+# query, named after the query:  `<output_dir>/<QueryName>.m`
+# Model-agnostic - set `dataset` to any semantic model. Pulls the model
+# definition as TMSL/BIM (Semantic Link) and reads `model.expressions[]` plus
+# every table partition whose `source.type == "m"`. Direct Lake / DAX partitions
+# have no M and are skipped.
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
 
 # PARAMETERS CELL ********************
 
 dataset    = "HydraReport"        # semantic model: display name or GUID
 workspace  = ""                   # blank = current workspace; else name or GUID
-output_dir = "Files/m_extract"    # lakehouse-relative path or abfss://... ; blank = don't write, just list
+output_dir = "Files/m_extract"    # path under the default lakehouse, or a full abfss:// path
 overwrite  = True
 
 # METADATA ********************
@@ -34,14 +54,12 @@ import json
 
 def load_model_json(dataset, workspace):
     ws = workspace or None
-    # Semantic Link Labs (present when the 'py-packages' environment is attached)
     try:
         import sempy_labs as labs
         bim = labs.get_semantic_model_bim(dataset=dataset, workspace=ws)
         return bim if isinstance(bim, dict) else json.loads(bim)
-    except Exception as e:
-        print("sempy_labs path unavailable, falling back to sempy.fabric:", e)
-    # core Semantic Link - available on the base Fabric runtime
+    except ModuleNotFoundError:
+        pass  # sempy_labs only present when the 'py-packages' environment is attached
     import sempy.fabric as fabric
     return json.loads(fabric.get_tmsl(dataset, workspace=ws))
 
@@ -112,20 +130,36 @@ queries = {k: v for k, v in extract_m(model_doc).items() if v and v.strip()}
 if not queries:
     raise ValueError("no M queries found in '{}' (Direct Lake / DAX-only model?)".format(dataset))
 
+# resolve output_dir to an absolute abfss path (a bare 'Files/...' relative path
+# does NOT reliably bind to the lakehouse from notebookutils.fs.put)
+base = output_dir.strip().rstrip("/")
+if base and not base.startswith("abfss://"):
+    lh = notebookutils.runtime.context.get("defaultLakehouseName")
+    if not lh:
+        raise RuntimeError(
+            "No default lakehouse attached. Attach one (Explorer > Lakehouses > Add), "
+            "or set output_dir to a full abfss:// path.")
+    abfss = notebookutils.lakehouse.get(lh)["properties"]["abfsPath"]
+    sub = base if base.lower().startswith("files") else "Files/" + base
+    base = "{}/{}".format(abfss, sub)
+if base:
+    notebookutils.fs.mkdirs(base)
+
 _bad = re.compile(r'[\\/:*?"<>|\r\n\t]+')
 rows = []
 for name in sorted(queries):
     safe = _bad.sub("_", name).strip() or "_"
     code = queries[name]
     code = code if code.endswith("\n") else code + "\n"
-    if output_dir.strip():
-        notebookutils.fs.put("{}/{}.m".format(output_dir.rstrip("/"), safe), code, overwrite)
+    if base:
+        notebookutils.fs.put("{}/{}.m".format(base, safe), code, overwrite)
     rows.append({"query": name, "file": safe + ".m", "lines": len(code.splitlines())})
 
 import pandas as pd
 summary = pd.DataFrame(rows)
-where = "written to {}/".format(output_dir.rstrip("/")) if output_dir.strip() else "(output_dir blank - not written)"
-print("{} M quer{} {}".format(len(rows), "y" if len(rows) == 1 else "ies", where))
+print("{} M quer{}  {}".format(
+    len(rows), "y" if len(rows) == 1 else "ies",
+    "-> " + base if base else "(output_dir blank; not written)"))
 display(summary)
 
 # METADATA ********************
