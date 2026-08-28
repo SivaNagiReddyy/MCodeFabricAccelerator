@@ -1,0 +1,95 @@
+table 'SalesLT SalesOrderDetail'
+	lineageTag: da8dbd47-2ecb-4741-83b5-f8e050a4384f
+
+	column SalesOrderID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 3f29227d-cba1-4b1d-875a-810f100b6015
+		summarizeBy: none
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderDetailID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: ba762f52-e719-4700-b77d-944d0b19bf11
+		summarizeBy: none
+		sourceColumn: SalesOrderDetailID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQty
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: b618df20-9f6a-44e0-b2b0-51a44064c28d
+		summarizeBy: none
+		sourceColumn: OrderQty
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 14ce31cd-f15f-494a-925f-2df045af441a
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: c324e1b9-e202-4e7e-aed6-108376c797d0
+		summarizeBy: none
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPriceDiscount
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: d65fb908-bfd9-460b-a81c-a71602f45c48
+		summarizeBy: none
+		sourceColumn: UnitPriceDiscount
+
+		annotation SummarizationSetBy = Automatic
+
+	column LineTotal
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: dcdcdf20-51b6-4343-8b25-55b2f28427e3
+		summarizeBy: none
+		sourceColumn: LineTotal
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 17daf284-fbfe-439b-97af-04a53a0b30de
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 1616a675-4a0d-4953-b865-385b60ea4530
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT SalesOrderDetail' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_SalesOrderDetail = Source{[Schema="SalesLT",Item="SalesOrderDetail"]}[Data]
+				in
+				    SalesLT_SalesOrderDetail
+
+	annotation PBI_ResultType = Table
+

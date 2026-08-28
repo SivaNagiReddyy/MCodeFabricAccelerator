@@ -1,0 +1,197 @@
+table DimCustomer
+	lineageTag: 4ad64cad-82c1-4878-b896-32e3e63381c0
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: 6479a8d8-d1fb-4ac3-b76d-dec01ecc47d6
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column NameStyle
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 85f3da9c-1bf2-4d2e-ae97-89c6ca1d8409
+		summarizeBy: none
+		sourceColumn: NameStyle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Title
+		dataType: string
+		lineageTag: 80b62546-99d3-4be4-8096-bb316d827c76
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: 39cefcf3-98eb-4bf4-b246-adb0b63d88d0
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MiddleName
+		dataType: string
+		lineageTag: 6cc0c880-e8b1-463a-be5e-0e3e79b30770
+		summarizeBy: none
+		sourceColumn: MiddleName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 6345f1ee-e092-4054-aa28-5b60180c2cef
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Suffix
+		dataType: string
+		lineageTag: 69ac68e6-a12e-4589-9aa4-571b9c897b89
+		summarizeBy: none
+		sourceColumn: Suffix
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName
+		dataType: string
+		lineageTag: 0350cd7c-0925-4548-a6e7-2a39ea6e0de0
+		summarizeBy: none
+		sourceColumn: FullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Company
+		dataType: string
+		lineageTag: 426083ce-acba-4a90-a76c-f3f0f29a2103
+		summarizeBy: none
+		sourceColumn: Company
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerType
+		dataType: string
+		lineageTag: b10ba4a8-3070-4802-b38b-0d40882692d8
+		summarizeBy: none
+		sourceColumn: CustomerType
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesPersonName
+		dataType: string
+		lineageTag: 9c17dce3-3d51-4807-8822-5dbe0b391667
+		summarizeBy: none
+		sourceColumn: SalesPersonName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModifiedDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7e1fe989-3edb-4ca3-9d48-294a7119b743
+		summarizeBy: none
+		sourceColumn: LastModifiedDate
+
+		variation Variation
+			isDefault
+			relationship: b00e1c0b-3f56-40bc-9af1-b63167a6e109
+			defaultHierarchy: LocalDateTable_28d2b750-662d-4a1d-9ce7-fe347623584e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 25a77334-90f6-4ac9-b917-1e4789ff59b2
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Phone
+		dataType: string
+		lineageTag: 0def6271-c250-4e4f-9302-571366a95763
+		summarizeBy: none
+		sourceColumn: Phone
+
+		annotation SummarizationSetBy = Automatic
+
+	column AddressID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9db75e39-9616-4d01-995b-531052f4fa87
+		summarizeBy: count
+		sourceColumn: AddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 2028509e-4570-46fc-a762-685cac71a0fe
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: d83f7a14-214c-42d7-9f51-d9634a71a427
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: f2d9990c-f5f7-4f45-84e1-b4d6e78ee307
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column PostalCode
+		dataType: string
+		lineageTag: e04a32aa-6a57-476e-a160-7bc04310db00
+		summarizeBy: none
+		sourceColumn: PostalCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullAddress
+		dataType: string
+		lineageTag: fe73d464-3dbc-4a78-af24-9b995b4f47a0
+		summarizeBy: none
+		sourceColumn: FullAddress
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCustomer = m
+		mode: import
+		source =
+				let
+				    Source = Stg_Customer,
+				
+				    MergedAddressLink = Table.NestedJoin(Source, {"CustomerID"}, Stg_CustomerAddress, {"CustomerID"}, "AddressLink", JoinKind.LeftOuter),
+				    ExpandedAddressLink = Table.ExpandTableColumn(MergedAddressLink, "AddressLink", {"AddressID"}, {"AddressID"}),
+				
+				    MergedAddress = Table.NestedJoin(ExpandedAddressLink, {"AddressID"}, Stg_Address, {"AddressID"}, "AddressData", JoinKind.LeftOuter),
+				    ExpandedAddress = Table.ExpandTableColumn(MergedAddress, "AddressData",
+				        {"City", "State", "Country", "PostalCode", "FullAddress"},
+				        {"City", "State", "Country", "PostalCode", "FullAddress"}),
+				
+				    ReorderedColumns = Table.ReorderColumns(ExpandedAddress, {
+				        "CustomerID", "FullName", "Company", "CustomerType", "SalesPersonName",
+				        "Email", "Phone", "City", "State", "Country", "PostalCode", "FullAddress"
+				    })
+				in
+				    ReorderedColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

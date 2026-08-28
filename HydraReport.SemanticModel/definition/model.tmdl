@@ -1,0 +1,46 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+/// Errors in queries that were loaded on 8/21/2026 4:19:42 PM.
+queryGroup 'Query Errors - 8/21/2026 4:19:42 PM'
+
+	annotation PBI_QueryGroupOrder = 0
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["SalesLT Address","SalesLT Customer","SalesLT CustomerAddress","SalesLT Product","SalesLT ProductCategory","SalesLT ProductDescription","SalesLT ProductModel","SalesLT ProductModelProductDescription","SalesLT SalesOrderDetail","SalesLT SalesOrderHeader","SQLServerName","SQLDatabaseName","fnGetSalesLTTable","Stg_Customer","Stg_Address","Stg_CustomerAddress","Stg_ProductModel","Stg_ProductCategory","Stg_Product","DimCustomer","DimProductCategory","DimDate","FactSales","DimProduct","Errors in FactSales","Errors in DimProduct"]
+
+ref table 'SalesLT Address'
+ref table 'SalesLT Customer'
+ref table 'SalesLT CustomerAddress'
+ref table 'SalesLT Product'
+ref table 'SalesLT ProductCategory'
+ref table 'SalesLT ProductDescription'
+ref table 'SalesLT ProductModel'
+ref table 'SalesLT ProductModelProductDescription'
+ref table 'SalesLT SalesOrderDetail'
+ref table 'SalesLT SalesOrderHeader'
+ref table DimCustomer
+ref table DateTableTemplate_778190f4-20b3-4b9a-9d4a-cf29719158fe
+ref table LocalDateTable_28d2b750-662d-4a1d-9ce7-fe347623584e
+ref table DimProductCategory
+ref table DimDate
+ref table LocalDateTable_54d7e770-3f2b-4dcc-b6f5-2aa0f0fecae2
+ref table FactSales
+ref table LocalDateTable_30802b97-3af6-44b8-b680-2b69b5134315
+ref table LocalDateTable_ed2c7c66-0bf8-4734-8d73-331c9903148a
+ref table LocalDateTable_5bc40643-958b-477c-82ca-f26b32567b55
+ref table DimProduct
+ref table LocalDateTable_be8dc6bd-bd6b-4e7e-9fd9-39882adef4e4
+ref table LocalDateTable_9be69922-17c4-4e21-a1b6-24223dc45b41
+ref table LocalDateTable_76a5b3e2-5ec4-44b1-a056-8310b6bda5cf
+ref table LocalDateTable_c9522942-589b-4458-8a1a-1a7ce181ea9d
+
+ref cultureInfo en-US
+

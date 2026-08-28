@@ -1,0 +1,50 @@
+table 'SalesLT ProductDescription'
+	lineageTag: 27549f78-4a9f-4346-9634-d10392d01f59
+
+	column ProductDescriptionID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 4d64654c-3314-45d3-b5a5-0fd0b1bd9281
+		summarizeBy: none
+		sourceColumn: ProductDescriptionID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 7d5cf8c9-4ccc-45d7-b187-175469e7b9a0
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: e40d0c72-cba7-4d10-a15e-f77775dc3c5f
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: fb83126c-c995-4772-ac3f-c97ba5253619
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT ProductDescription' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_ProductDescription = Source{[Schema="SalesLT",Item="ProductDescription"]}[Data]
+				in
+				    SalesLT_ProductDescription
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,283 @@
+expression SQLServerName = "hydraaserver.database.windows.net" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: d198af16-9387-4640-b156-e05b388d8bf3
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression SQLDatabaseName = "hydradatabase" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e896f727-0262-4d5c-80cd-03d7f65a1c7c
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression fnGetSalesLTTable =
+		let
+		    fnGetSalesLTTable = (TableName as text) as table =>
+		        let
+		            Source = Sql.Database(SQLServerName, SQLDatabaseName),
+		            NavigateToTable = Source{[Schema = "SalesLT", Item = TableName]}[Data]
+		        in
+		            NavigateToTable
+		in
+		    fnGetSalesLTTable
+	lineageTag: ff785263-6e66-47bb-8d06-efd91eb30099
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression Stg_Customer =
+		let
+		    Source = fnGetSalesLTTable("Customer"),
+		
+		    SelectedColumns = Table.SelectColumns(Source,
+		        {"CustomerID", "NameStyle", "Title", "FirstName", "MiddleName", "LastName",
+		         "Suffix", "CompanyName", "SalesPerson", "EmailAddress", "Phone", "ModifiedDate"}),
+		
+		    RenamedColumns = Table.RenameColumns(SelectedColumns, {
+		        {"CompanyName", "Company"},
+		        {"SalesPerson", "SalesPersonName"},
+		        {"EmailAddress", "Email"},
+		        {"ModifiedDate", "LastModifiedDate"}
+		    }),
+		
+		    ChangedType = Table.TransformColumnTypes(RenamedColumns, {
+		        {"CustomerID", Int64.Type}, {"NameStyle", type logical}, {"Title", type text},
+		        {"FirstName", type text}, {"MiddleName", type text}, {"LastName", type text},
+		        {"Suffix", type text}, {"Company", type text}, {"SalesPersonName", type text},
+		        {"Email", type text}, {"Phone", type text}, {"LastModifiedDate", type datetime}
+		    }),
+		
+		    ReplacedNulls = Table.ReplaceValue(ChangedType, null, "", Replacer.ReplaceValue,
+		        {"Title", "MiddleName", "Suffix"}),
+		
+		    AddedFullName = Table.AddColumn(ReplacedNulls, "FullName", each
+		        Text.Trim(Text.Combine({[FirstName], [MiddleName], [LastName]}, " ")), type text),
+		
+		    AddedCustomerType = Table.AddColumn(AddedFullName, "CustomerType", each
+		        if [Company] <> null and Text.Trim([Company]) <> "" then "Business" else "Individual", type text),
+		
+		    RemovedDuplicates = Table.Distinct(AddedCustomerType, {"CustomerID"})
+		in
+		    RemovedDuplicates
+	lineageTag: c2c1c156-0b74-4840-9886-93438cd2317b
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Stg_Address =
+		let
+		    Source = fnGetSalesLTTable("Address"),
+		
+		    SelectedColumns = Table.SelectColumns(Source,
+		        {"AddressID", "AddressLine1", "AddressLine2", "City", "StateProvince", "CountryRegion", "PostalCode", "ModifiedDate"}),
+		
+		    RenamedColumns = Table.RenameColumns(SelectedColumns, {
+		        {"StateProvince", "State"}, {"CountryRegion", "Country"}, {"ModifiedDate", "LastModifiedDate"}
+		    }),
+		
+		    ChangedType = Table.TransformColumnTypes(RenamedColumns, {
+		        {"AddressID", Int64.Type}, {"AddressLine1", type text}, {"AddressLine2", type text},
+		        {"City", type text}, {"State", type text}, {"Country", type text},
+		        {"PostalCode", type text}, {"LastModifiedDate", type datetime}
+		    }),
+		
+		    TrimmedText = Table.TransformColumns(ChangedType, {
+		        {"City", Text.Trim, type text}, {"State", Text.Trim, type text}, {"Country", Text.Trim, type text}
+		    }),
+		
+		    AddedFullAddress = Table.AddColumn(TrimmedText, "FullAddress", each
+		        Text.Combine(List.RemoveNulls({[AddressLine1], [AddressLine2], [City], [State], [PostalCode], [Country]}), ", "),
+		        type text),
+		
+		    RemovedDuplicates = Table.Distinct(AddedFullAddress, {"AddressID"})
+		in
+		    RemovedDuplicates
+	lineageTag: c80c62a6-d078-4176-9f46-fa1301118f87
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Stg_CustomerAddress =
+		let
+		    Source = fnGetSalesLTTable("CustomerAddress"),
+		
+		    SelectedColumns = Table.SelectColumns(Source, {"CustomerID", "AddressID", "AddressType", "ModifiedDate"}),
+		
+		    ChangedType = Table.TransformColumnTypes(SelectedColumns, {
+		        {"CustomerID", Int64.Type}, {"AddressID", Int64.Type}, {"AddressType", type text}, {"ModifiedDate", type datetime}
+		    }),
+		
+		    FilteredMainOffice = Table.SelectRows(ChangedType, each [AddressType] = "Main Office"),
+		
+		    RemovedDuplicates = Table.Distinct(FilteredMainOffice, {"CustomerID"}),
+		
+		    RenamedColumns = Table.RenameColumns(RemovedDuplicates, {{"ModifiedDate", "LinkModifiedDate"}})
+		in
+		    RenamedColumns
+	lineageTag: 65d2badf-b67f-44e7-bbb7-079f8ea9f893
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Stg_ProductModel =
+		let
+		    Source = fnGetSalesLTTable("ProductModel"),
+		
+		    RemovedColumns = Table.RemoveColumns(Source, {"CatalogDescription", "rowguid"}),
+		
+		    RenamedColumns = Table.RenameColumns(RemovedColumns, {{"Name", "ModelName"}}),
+		
+		    ChangedType = Table.TransformColumnTypes(RenamedColumns, {
+		        {"ProductModelID", Int64.Type}, {"ModelName", type text}, {"ModifiedDate", type datetime}
+		    }),
+		
+		    RemovedDuplicates = Table.Distinct(ChangedType, {"ProductModelID"})
+		in
+		    RemovedDuplicates
+	lineageTag: db56f136-1e9f-4cac-b31a-b2697d8249e6
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Stg_ProductCategory =
+		let
+		    Source = fnGetSalesLTTable("ProductCategory"),
+		
+		    SelectedColumns = Table.SelectColumns(Source, {"ProductCategoryID", "ParentProductCategoryID", "Name"}),
+		
+		    ChangedType = Table.TransformColumnTypes(SelectedColumns, {
+		        {"ProductCategoryID", Int64.Type}, {"ParentProductCategoryID", Int64.Type}, {"Name", type text}
+		    }),
+		
+		    RenamedColumns = Table.RenameColumns(ChangedType, {{"Name", "SubcategoryName"}}),
+		
+		    MergedWithParent = Table.NestedJoin(RenamedColumns, {"ParentProductCategoryID"},
+		        RenamedColumns, {"ProductCategoryID"}, "ParentLookup", JoinKind.LeftOuter),
+		
+		    ExpandedParent = Table.ExpandTableColumn(MergedWithParent, "ParentLookup", {"SubcategoryName"}, {"CategoryName"}),
+		
+		    AddedFinalCategoryName = Table.AddColumn(ExpandedParent, "FinalCategoryName", each
+		        if [CategoryName] = null then [SubcategoryName] else [CategoryName], type text),
+		
+		    AddedCategoryLevel = Table.AddColumn(AddedFinalCategoryName, "CategoryLevel", each
+		        if [ParentProductCategoryID] = null then "Category" else "Subcategory", type text),
+		
+		    RemovedHelperColumn = Table.RemoveColumns(AddedCategoryLevel, {"CategoryName"}),
+		    FinalColumns = Table.RenameColumns(RemovedHelperColumn, {{"FinalCategoryName", "CategoryName"}})
+		in
+		    FinalColumns
+	lineageTag: f07de13f-443d-4352-8cb8-06b71a657f0d
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Stg_Product =
+		let
+		    Source = fnGetSalesLTTable("Product"),
+		
+		    SelectedColumns = Table.SelectColumns(Source, {
+		        "ProductID", "Name", "ProductNumber", "Color", "StandardCost", "ListPrice",
+		        "Size", "Weight", "ProductCategoryID", "ProductModelID",
+		        "SellStartDate", "SellEndDate", "DiscontinuedDate", "ModifiedDate"
+		    }),
+		
+		    RenamedColumns = Table.RenameColumns(SelectedColumns, {
+		        {"Name", "ProductName"}, {"ModifiedDate", "LastModifiedDate"}
+		    }),
+		
+		    ChangedType = Table.TransformColumnTypes(RenamedColumns, {
+		        {"ProductID", Int64.Type}, {"ProductName", type text}, {"ProductNumber", type text},
+		        {"Color", type text}, {"StandardCost", type number}, {"ListPrice", type number},
+		        {"Size", type text}, {"Weight", type number}, {"ProductCategoryID", Int64.Type},
+		        {"ProductModelID", Int64.Type}, {"LastModifiedDate", type datetime}
+		    }),
+		
+		    // Date fix: the source stores dates as ISO text with a "T...0000000" time part, which
+		    // "type date" can't parse directly. Go through "type datetime" first, then take the date.
+		    ChangedDatesToDateTime = Table.TransformColumnTypes(ChangedType, {
+		        {"SellStartDate", type datetime}, {"SellEndDate", type datetime}, {"DiscontinuedDate", type datetime}
+		    }),
+		    ChangedDatesToDate = Table.TransformColumns(ChangedDatesToDateTime, {
+		        {"SellStartDate", Date.From, type date},
+		        {"SellEndDate", Date.From, type date},
+		        {"DiscontinuedDate", Date.From, type date}
+		    }),
+		
+		    // Null handling: make "unspecified" explicit rather than blank
+		    ReplacedColorNulls = Table.ReplaceValue(ChangedDatesToDate, null, "N/A", Replacer.ReplaceValue, {"Color"}),
+		
+		    // Conditional column: product lifecycle status
+		    AddedProductStatus = Table.AddColumn(ReplacedColorNulls, "ProductStatus", each
+		        if [DiscontinuedDate] <> null then "Discontinued"
+		        else if [SellEndDate] <> null and [SellEndDate] < DateTime.Date(DateTime.LocalNow()) then "Inactive"
+		        else "Active", type text),
+		
+		    // Derived columns: margin metrics at the product-master level
+		    AddedMargin = Table.AddColumn(AddedProductStatus, "Margin", each [ListPrice] - [StandardCost], type number),
+		    AddedMarginPct = Table.AddColumn(AddedMargin, "MarginPercent", each
+		        if [ListPrice] = 0 then 0 else ([ListPrice] - [StandardCost]) / [ListPrice], type number),
+		
+		    RemovedDuplicates = Table.Distinct(AddedMarginPct, {"ProductID"})
+		in
+		    RemovedDuplicates
+	lineageTag: 8dddd30b-61ab-4a43-b2a1-b3ce6c62b108
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Errors in FactSales' =
+		let
+		Source = FactSales,
+		  #"Detected Type Mismatches" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Source, Table.ColumnsOfType(Source, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "The type of the value does not match the type of the column.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Source, pairs),
+		  #"Added Index" = Table.AddIndexColumn(#"Detected Type Mismatches", "Row Number" ,1),
+		  #"Kept Errors" = Table.SelectRowsWithErrors(#"Added Index", {"SalesOrderID", "SalesOrderDetailID", "OrderQty", "ProductID", "UnitPrice", "UnitPriceDiscount", "LineTotal", "OrderDate", "DueDate", "ShipDate", "OnlineOrderFlag", "SalesOrderNumber", "CustomerID", "ShipToAddressID", "BillToAddressID", "ShipMethod", "CurrentListPrice", "ProductCategoryID", "CustomerName", "CustomerType", "NetAmount", "DiscountAmount", "PriceVarianceVsListPrice", "OrderChannel", "IsShipBillSame", "OrderStatusDescription"}),
+		  #"Reordered Columns" = Table.ReorderColumns(#"Kept Errors", {"Row Number", "SalesOrderID", "SalesOrderDetailID", "OrderQty", "ProductID", "UnitPrice", "UnitPriceDiscount", "LineTotal", "OrderDate", "DueDate", "ShipDate", "OnlineOrderFlag", "SalesOrderNumber", "CustomerID", "ShipToAddressID", "BillToAddressID", "ShipMethod", "CurrentListPrice", "ProductCategoryID", "CustomerName", "CustomerType", "NetAmount", "DiscountAmount", "PriceVarianceVsListPrice", "OrderChannel", "IsShipBillSame", "OrderStatusDescription"})
+		in
+		  #"Reordered Columns"
+	lineageTag: eb8d126f-4aa5-4584-9fe6-491e6f95af0e
+	queryGroup: 'Query Errors - 8/21/2026 4:19:42 PM'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Errors in DimProduct' =
+		let
+		Source = DimProduct,
+		  #"Detected Type Mismatches" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Source, Table.ColumnsOfType(Source, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "The type of the value does not match the type of the column.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Source, pairs),
+		  #"Added Index" = Table.AddIndexColumn(#"Detected Type Mismatches", "Row Number" ,1),
+		  #"Kept Errors" = Table.SelectRowsWithErrors(#"Added Index", {"ProductID", "ProductName", "ProductNumber", "ModelName", "CategoryName", "SubcategoryName", "Color", "Size", "Weight", "ProductModelID", "StandardCost", "ListPrice", "Margin", "LastModifiedDate", "MarginPercent", "ProductStatus", "SellStartDate", "SellEndDate", "DiscontinuedDate", "ProductCategoryID", "CategoryLevel"}),
+		  #"Reordered Columns" = Table.ReorderColumns(#"Kept Errors", {"Row Number", "ProductID", "ProductName", "ProductNumber", "ModelName", "CategoryName", "SubcategoryName", "Color", "Size", "Weight", "ProductModelID", "StandardCost", "ListPrice", "Margin", "LastModifiedDate", "MarginPercent", "ProductStatus", "SellStartDate", "SellEndDate", "DiscontinuedDate", "ProductCategoryID", "CategoryLevel"}),
+		    SellStartDate = #"Reordered Columns"{0}[SellStartDate]
+		in
+		  SellStartDate
+	lineageTag: 0cd02a47-46cf-4850-925a-d2bdcfa2bc96
+	queryGroup: 'Query Errors - 8/21/2026 4:19:42 PM'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

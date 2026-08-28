@@ -1,0 +1,212 @@
+table 'SalesLT SalesOrderHeader'
+	lineageTag: 85ea2275-add9-4569-945e-22f619c1417e
+
+	column SalesOrderID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 075e93c5-c62c-494d-8fbd-6bcdc03e71c0
+		summarizeBy: none
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column RevisionNumber
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 72cd7e48-25d9-471e-a5f4-c26ba6600d85
+		summarizeBy: none
+		sourceColumn: RevisionNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: db5e60d4-5825-4a01-84fc-21bee6506ed4
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column DueDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 7b35ec1a-919d-4e80-a3de-2a64fdeb3e6d
+		summarizeBy: none
+		sourceColumn: DueDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: c88cd0ce-3ffb-44e8-9285-7b29d9c59c4d
+		summarizeBy: none
+		sourceColumn: ShipDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 864e24df-06ac-4a2d-b7c8-e999721d088e
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnlineOrderFlag
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 5a2f7bc6-a8bc-4aa3-944b-f590378dc364
+		summarizeBy: none
+		sourceColumn: OnlineOrderFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderNumber
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: dd2990d6-3e2d-4205-b5cc-05787506ccb2
+		summarizeBy: none
+		sourceColumn: SalesOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column PurchaseOrderNumber
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 38ee02c7-817a-420c-864e-1b9ae69050ed
+		summarizeBy: none
+		sourceColumn: PurchaseOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountNumber
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 3d822850-13bd-476f-9c7c-0f5777028375
+		summarizeBy: none
+		sourceColumn: AccountNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 352af6a3-5ca9-4a13-a1bb-4d8702b4dcd6
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipToAddressID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 57003fe9-1e13-4c54-ac42-fea9a8b6d52f
+		summarizeBy: none
+		sourceColumn: ShipToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column BillToAddressID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 389faed6-588b-4e0a-85e4-be3ca440ddfe
+		summarizeBy: none
+		sourceColumn: BillToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipMethod
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: ade2be41-35cf-4b8a-802f-5e684a16cd48
+		summarizeBy: none
+		sourceColumn: ShipMethod
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreditCardApprovalCode
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 5abb2f4c-f666-4b3e-ac71-e6a9f7d38baf
+		summarizeBy: none
+		sourceColumn: CreditCardApprovalCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubTotal
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: fbf3654c-7cf8-45fb-acb2-558c6b19ce49
+		summarizeBy: none
+		sourceColumn: SubTotal
+
+		annotation SummarizationSetBy = Automatic
+
+	column TaxAmt
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: d12d0264-2028-4254-acbc-68730cb482ee
+		summarizeBy: none
+		sourceColumn: TaxAmt
+
+		annotation SummarizationSetBy = Automatic
+
+	column Freight
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 626e1e0e-3d3e-4cd8-9e78-379b0683f819
+		summarizeBy: none
+		sourceColumn: Freight
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalDue
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 48c4ae82-57eb-4b53-bdd2-e10460d31537
+		summarizeBy: none
+		sourceColumn: TotalDue
+
+		annotation SummarizationSetBy = Automatic
+
+	column Comment
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 4b9d2110-5930-40a4-a736-1a8334e12a2b
+		summarizeBy: none
+		sourceColumn: Comment
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: ea772250-ed78-4bce-a3de-b4de5e90fdcd
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 113d477c-7697-4d29-9f73-3bf70558d906
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT SalesOrderHeader' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_SalesOrderHeader = Source{[Schema="SalesLT",Item="SalesOrderHeader"]}[Data]
+				in
+				    SalesLT_SalesOrderHeader
+
+	annotation PBI_ResultType = Table
+

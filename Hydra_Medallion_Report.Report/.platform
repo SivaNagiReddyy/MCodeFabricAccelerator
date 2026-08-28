@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Hydra_Medallion_Report"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3b27dbf1-a989-b112-4ee3-4d79945ec5f8"
+  }
+}

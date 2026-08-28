@@ -1,0 +1,63 @@
+table 'SalesLT ProductModel'
+	lineageTag: 0ac3b27b-cd13-452d-b089-dd9a8f1bd918
+
+	column ProductModelID
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 28ba1a9a-3ecb-4222-878a-b2088bec0e72
+		summarizeBy: count
+		sourceColumn: ProductModelID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 63f1963d-4e09-49c0-a33d-8f55c7cf4315
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column CatalogDescription
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9f33ad94-d2c3-4247-a647-ee12970e2093
+		summarizeBy: none
+		sourceColumn: CatalogDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 2e12993e-3fa2-4685-8a8a-7faf89ae174a
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 40abeca8-ea4b-4f27-9c87-f024105d0d33
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT ProductModel' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_ProductModel = Source{[Schema="SalesLT",Item="ProductModel"]}[Data]
+				in
+				    SalesLT_ProductModel
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,97 @@
+table 'SalesLT Address'
+	lineageTag: 4b2dba3f-3ef8-43c1-9dd2-21e7c57480c0
+
+	column AddressID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: d05e6bae-7c8e-43c4-a39c-ad9dd9a63c32
+		summarizeBy: none
+		sourceColumn: AddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AddressLine1
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: a7fb18b7-ab7a-4b77-a6c7-0fbfc919f588
+		summarizeBy: none
+		sourceColumn: AddressLine1
+
+		annotation SummarizationSetBy = Automatic
+
+	column AddressLine2
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9a6a4c12-c4bc-4d45-b069-c4b668a7fc3d
+		summarizeBy: none
+		sourceColumn: AddressLine2
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 04205c39-94ad-4f58-9784-e1de474a4d86
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column StateProvince
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: c69aab12-4914-4db8-a185-99f21c70310a
+		summarizeBy: none
+		sourceColumn: StateProvince
+
+		annotation SummarizationSetBy = Automatic
+
+	column CountryRegion
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: f6d1bcdc-f9bf-45ed-84cd-781d489029f6
+		summarizeBy: none
+		sourceColumn: CountryRegion
+
+		annotation SummarizationSetBy = Automatic
+
+	column PostalCode
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 0d77acda-7317-4b77-80a0-70bb77ce2508
+		summarizeBy: none
+		sourceColumn: PostalCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 33582761-f946-42c0-ba04-19e42841b684
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 456f350f-5d3e-43d4-9577-76b499cec2b7
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT Address' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_Address = Source{[Schema="SalesLT",Item="Address"]}[Data]
+				in
+				    SalesLT_Address
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

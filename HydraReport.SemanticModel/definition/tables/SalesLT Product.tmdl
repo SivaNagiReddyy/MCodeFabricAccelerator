@@ -1,0 +1,167 @@
+table 'SalesLT Product'
+	lineageTag: 5906bc6e-bbe5-46d5-8646-f9344b635690
+
+	column ProductID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 852dfe4d-f2c7-435b-a048-2799b6486498
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 95a30e08-43ba-4cf6-a2b9-0e12a3ca5072
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductNumber
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 5385637e-53be-4cac-8139-c1b38f1f39bc
+		summarizeBy: none
+		sourceColumn: ProductNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column Color
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 1f94a46d-f778-43a5-b4bb-86c5ce4967cb
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column StandardCost
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 1e809c4f-4700-4f70-8de2-10475d21952a
+		summarizeBy: none
+		sourceColumn: StandardCost
+
+		annotation SummarizationSetBy = Automatic
+
+	column ListPrice
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 81e21ced-d3af-447b-9146-326c334927d1
+		summarizeBy: none
+		sourceColumn: ListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+	column Size
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: ef9d96e1-73ee-4443-aeb9-7ef982424962
+		summarizeBy: none
+		sourceColumn: Size
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weight
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 8f0c64ee-bd88-454f-9255-1efee8aba810
+		summarizeBy: none
+		sourceColumn: Weight
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategoryID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: f00eaf55-7842-4f93-8f3c-9964e470a174
+		summarizeBy: none
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductModelID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 2616b8c2-4d81-401a-9678-90f876be6576
+		summarizeBy: none
+		sourceColumn: ProductModelID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SellStartDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: bb9e5485-130d-43e5-966a-8328c75bc7e7
+		summarizeBy: none
+		sourceColumn: SellStartDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column SellEndDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 042ca936-28fe-4560-ab10-9df6e7ab444b
+		summarizeBy: none
+		sourceColumn: SellEndDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscontinuedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: cf36bbc1-1f67-4116-8c5d-8fa432c43d77
+		summarizeBy: none
+		sourceColumn: DiscontinuedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column ThumbNailPhoto
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: b9d8b146-e2b1-47cc-acde-190eb570cea7
+		summarizeBy: none
+		sourceColumn: ThumbNailPhoto
+
+		annotation SummarizationSetBy = Automatic
+
+	column ThumbnailPhotoFileName
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 12bd9dcc-4e9e-43b4-9715-c45b92687695
+		summarizeBy: none
+		sourceColumn: ThumbnailPhotoFileName
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9f157f4e-702d-4795-9032-5175fdfab694
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 8f2d4df6-15ff-4630-b0a0-de822eb9724a
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT Product' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_Product = Source{[Schema="SalesLT",Item="Product"]}[Data]
+				in
+				    SalesLT_Product
+
+	annotation PBI_ResultType = Table
+

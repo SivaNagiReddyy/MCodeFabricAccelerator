@@ -1,0 +1,396 @@
+table FactSales
+	lineageTag: e60f3020-a863-4483-a42c-eb1ca9da1e83
+
+	measure 'Total Sales' = SUM(FactSales[NetAmount])
+		lineageTag: f3d03cb0-b9d1-42e0-8c9f-abab65a18927
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Orders' = DISTINCTCOUNT(FactSales[SalesOrderID])
+		formatString: 0
+		lineageTag: 641c9a75-3d10-4936-8714-b9c5486dde15
+
+	measure 'Total Customers' = DISTINCTCOUNT(FactSales[CustomerID])
+		formatString: 0
+		lineageTag: 58ed040d-ca85-4ec8-a418-15b9e0942280
+
+	measure 'Average Order Value' = DIVIDE([Total Sales], [Total Orders])
+		lineageTag: c81547d2-a3d9-45f4-99a4-1e894b059b9e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Quantity Sold' = SUM(FactSales[OrderQty])
+		formatString: 0
+		lineageTag: 8fa16d79-15de-4cd2-be7a-799ed9abd8ac
+
+	measure 'Total Discount' = SUM(FactSales[DiscountAmount])
+		lineageTag: 77d21a57-e69c-4531-8911-f57ea03ce797
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Sales PY' = CALCULATE([Total Sales], SAMEPERIODLASTYEAR(DimDate[Date]))
+		lineageTag: 68e89a59-1636-49c9-bd87-ddfc0df58013
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'YoY Growth %' = DIVIDE([Total Sales] - [Sales PY], [Sales PY])
+		lineageTag: 53e22513-3f40-44a9-ba12-c6b17a7e7b00
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Product Sales Rank' = RANKX(ALL(DimProduct[ProductName]), [Total Sales], , DESC, DENSE)
+		formatString: 0
+		lineageTag: 7cbe336d-c961-4ab3-911e-fd3cfd0e6607
+
+	column SalesOrderID
+		dataType: int64
+		formatString: 0
+		lineageTag: 83744195-fd30-4920-9e14-e0f7af4bcce0
+		summarizeBy: count
+		sourceColumn: SalesOrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderDetailID
+		dataType: int64
+		formatString: 0
+		lineageTag: f3e58343-c95a-4472-bd0e-4af512b1a89e
+		summarizeBy: count
+		sourceColumn: SalesOrderDetailID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQty
+		dataType: int64
+		formatString: 0
+		lineageTag: 10a00249-99b7-4e4a-b27f-25b78f870054
+		summarizeBy: sum
+		sourceColumn: OrderQty
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		lineageTag: c8782d59-6dea-44ae-a6fd-04b314748897
+		summarizeBy: count
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: double
+		lineageTag: 45b24afe-4ccd-4a06-a90b-1531dd0a43c4
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column UnitPriceDiscount
+		dataType: double
+		lineageTag: 433253ec-9117-4833-92c6-d47e776b6656
+		summarizeBy: sum
+		sourceColumn: UnitPriceDiscount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LineTotal
+		dataType: double
+		lineageTag: a06e935c-bac0-48ab-8265-b6bedfff665d
+		summarizeBy: sum
+		sourceColumn: LineTotal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OrderDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: fde3f8d0-008a-4b5e-8015-d99204171304
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		variation Variation
+			isDefault
+			relationship: 47fc700e-74f1-4b47-80e3-9fda40191949
+			defaultHierarchy: LocalDateTable_30802b97-3af6-44b8-b680-2b69b5134315.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DueDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d5186763-2389-48e8-ac2f-48897ea60639
+		summarizeBy: none
+		sourceColumn: DueDate
+
+		variation Variation
+			isDefault
+			relationship: ba2066af-6a02-4c8d-8f84-6d20a3841533
+			defaultHierarchy: LocalDateTable_ed2c7c66-0bf8-4734-8d73-331c9903148a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ShipDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 789eb1e7-ee27-4c86-a172-656faac581db
+		summarizeBy: none
+		sourceColumn: ShipDate
+
+		variation Variation
+			isDefault
+			relationship: cbfba96d-95da-4d68-9e36-968d30a2364c
+			defaultHierarchy: LocalDateTable_5bc40643-958b-477c-82ca-f26b32567b55.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OnlineOrderFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 50c6499d-c051-4a9f-a458-a48717ff523e
+		summarizeBy: none
+		sourceColumn: OnlineOrderFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderNumber
+		dataType: string
+		lineageTag: c207b6b1-789b-4760-bea5-a10583d01dc8
+		summarizeBy: none
+		sourceColumn: SalesOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: 2de9d55a-5cb1-4829-9ceb-70733c1d61b3
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipToAddressID
+		dataType: int64
+		formatString: 0
+		lineageTag: 768b4002-28fa-4313-9397-60c7e23e1264
+		summarizeBy: count
+		sourceColumn: ShipToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column BillToAddressID
+		dataType: int64
+		formatString: 0
+		lineageTag: 553554a8-5e7d-411b-a1c5-fdc55ab5173e
+		summarizeBy: count
+		sourceColumn: BillToAddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShipMethod
+		dataType: string
+		lineageTag: f1e18d2a-b744-47c5-8c1e-8776be7ca0a4
+		summarizeBy: none
+		sourceColumn: ShipMethod
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrentListPrice
+		dataType: double
+		lineageTag: 89f95456-f7ee-40f6-83a5-9c082e2dc2f7
+		summarizeBy: sum
+		sourceColumn: CurrentListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductCategoryID
+		dataType: int64
+		formatString: 0
+		lineageTag: 3cbbf42f-e547-4ee2-81c5-4f75c80a6eba
+		summarizeBy: none
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerName
+		dataType: string
+		lineageTag: c7675288-b670-453e-9354-357cf1e12c77
+		summarizeBy: none
+		sourceColumn: CustomerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerType
+		dataType: string
+		lineageTag: 92617470-5e61-4ae7-8502-4ed7dd109454
+		summarizeBy: none
+		sourceColumn: CustomerType
+
+		annotation SummarizationSetBy = Automatic
+
+	column NetAmount
+		dataType: double
+		lineageTag: 1d28289b-def0-4240-a416-69e61cce3e3f
+		summarizeBy: sum
+		sourceColumn: NetAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DiscountAmount
+		dataType: double
+		lineageTag: f16662f8-b3f3-4cfe-a511-6f779a9a0ed8
+		summarizeBy: sum
+		sourceColumn: DiscountAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PriceVarianceVsListPrice
+		dataType: double
+		lineageTag: b078d1ad-9be0-4063-ad2c-e2e7cdbf4c12
+		summarizeBy: sum
+		sourceColumn: PriceVarianceVsListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OrderChannel
+		dataType: string
+		lineageTag: 51e7a8ad-a882-4eed-a88d-61218b8e4935
+		summarizeBy: none
+		sourceColumn: OrderChannel
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsShipBillSame
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f00c2bb2-97e8-4373-bdc4-933aa4fdf3fb
+		summarizeBy: none
+		sourceColumn: IsShipBillSame
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderStatusDescription
+		dataType: string
+		lineageTag: f323694f-5a00-4dbb-83af-ab0e533b0d9a
+		summarizeBy: none
+		sourceColumn: OrderStatusDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactSales = m
+		mode: import
+		source =
+				let
+				    SourceDetail = fnGetSalesLTTable("SalesOrderDetail"),
+				
+				    SelectedDetailColumns = Table.SelectColumns(SourceDetail,
+				        {"SalesOrderID", "SalesOrderDetailID", "OrderQty", "ProductID", "UnitPrice", "UnitPriceDiscount", "LineTotal"}),
+				
+				    ChangedDetailTypes = Table.TransformColumnTypes(SelectedDetailColumns, {
+				        {"SalesOrderID", Int64.Type}, {"SalesOrderDetailID", Int64.Type}, {"OrderQty", Int64.Type},
+				        {"ProductID", Int64.Type}, {"UnitPrice", type number}, {"UnitPriceDiscount", type number}, {"LineTotal", type number}
+				    }),
+				
+				    // Null handling: enforce 0 for no-discount lines
+				    ReplacedDiscountNulls = Table.ReplaceValue(ChangedDetailTypes, null, 0, Replacer.ReplaceValue, {"UnitPriceDiscount"}),
+				
+				    // Remove unnecessary records: zero-quantity lines carry no sales value
+				    FilteredZeroQty = Table.SelectRows(ReplacedDiscountNulls, each [OrderQty] > 0),
+				
+				    RemovedDuplicateLines = Table.Distinct(FilteredZeroQty, {"SalesOrderDetailID"}),
+				
+				    // Merge SalesOrderHeader: bring header ATTRIBUTES only (not $ totals) onto each line
+				    SourceHeader = fnGetSalesLTTable("SalesOrderHeader"),
+				    SelectedHeaderColumns = Table.SelectColumns(SourceHeader, {
+				        "SalesOrderID", "OrderDate", "DueDate", "ShipDate", "Status", "OnlineOrderFlag",
+				        "SalesOrderNumber", "CustomerID", "ShipToAddressID", "BillToAddressID", "ShipMethod"
+				    }),
+				    ChangedHeaderTypesMain = Table.TransformColumnTypes(SelectedHeaderColumns, {
+				        {"SalesOrderID", Int64.Type},
+				        {"Status", Int64.Type}, {"OnlineOrderFlag", type logical}, {"SalesOrderNumber", type text},
+				        {"CustomerID", Int64.Type}, {"ShipToAddressID", Int64.Type}, {"BillToAddressID", Int64.Type}, {"ShipMethod", type text}
+				    }),
+				
+				    // Date fix: same ISO-text issue as Stg_Product - go through datetime first, then take the date
+				    ChangedHeaderDatesToDateTime = Table.TransformColumnTypes(ChangedHeaderTypesMain, {
+				        {"OrderDate", type datetime}, {"DueDate", type datetime}, {"ShipDate", type datetime}
+				    }),
+				    ChangedHeaderTypes = Table.TransformColumns(ChangedHeaderDatesToDateTime, {
+				        {"OrderDate", Date.From, type date},
+				        {"DueDate", Date.From, type date},
+				        {"ShipDate", Date.From, type date}
+				    }),
+				
+				    MergedHeader = Table.NestedJoin(RemovedDuplicateLines, {"SalesOrderID"}, ChangedHeaderTypes, {"SalesOrderID"}, "HeaderData", JoinKind.Inner),
+				    ExpandedHeader = Table.ExpandTableColumn(MergedHeader, "HeaderData", {
+				        "OrderDate", "DueDate", "ShipDate", "Status", "OnlineOrderFlag", "SalesOrderNumber",
+				        "CustomerID", "ShipToAddressID", "BillToAddressID", "ShipMethod"
+				    }),
+				
+				    // Join Product: pull current ListPrice to compare against price actually sold at
+				    MergedProduct = Table.NestedJoin(ExpandedHeader, {"ProductID"}, Stg_Product, {"ProductID"}, "ProductData", JoinKind.LeftOuter),
+				    ExpandedProduct = Table.ExpandTableColumn(MergedProduct, "ProductData", {"ListPrice", "ProductCategoryID"}, {"CurrentListPrice", "ProductCategoryID"}),
+				
+				    // Join Customer: denormalize name/segment directly onto the fact for quick-build visuals
+				    MergedCustomer = Table.NestedJoin(ExpandedProduct, {"CustomerID"}, Stg_Customer, {"CustomerID"}, "CustomerData", JoinKind.LeftOuter),
+				    ExpandedCustomer = Table.ExpandTableColumn(MergedCustomer, "CustomerData", {"FullName", "CustomerType"}, {"CustomerName", "CustomerType"}),
+				
+				    // Derived column: net revenue after discount, computed independently for reconciliation against LineTotal
+				    AddedNetAmount = Table.AddColumn(ExpandedCustomer, "NetAmount", each
+				        Number.Round([OrderQty] * [UnitPrice] * (1 - [UnitPriceDiscount]), 2), type number),
+				
+				    // Derived column: discount amount in currency
+				    AddedDiscountAmount = Table.AddColumn(AddedNetAmount, "DiscountAmount", each
+				        Number.Round([OrderQty] * [UnitPrice] * [UnitPriceDiscount], 2), type number),
+				
+				    // Derived column: variance between price sold at and current catalog price
+				    AddedPriceVariance = Table.AddColumn(AddedDiscountAmount, "PriceVarianceVsListPrice", each
+				        [UnitPrice] - [CurrentListPrice], type number),
+				
+				    // Conditional column: order channel
+				    AddedOrderChannel = Table.AddColumn(AddedPriceVariance, "OrderChannel", each
+				        if [OnlineOrderFlag] = true then "Online" else "Sales Rep", type text),
+				
+				    // Conditional column: ship-to vs bill-to comparison flag
+				    AddedIsShipBillSame = Table.AddColumn(AddedOrderChannel, "IsShipBillSame", each
+				        [ShipToAddressID] = [BillToAddressID], type logical),
+				
+				    // Conditional column: decode numeric SalesLT status code to business text
+				    AddedOrderStatus = Table.AddColumn(AddedIsShipBillSame, "OrderStatusDescription", each
+				        if [Status] = 1 then "In Process"
+				        else if [Status] = 2 then "Approved"
+				        else if [Status] = 3 then "Backordered"
+				        else if [Status] = 4 then "Rejected"
+				        else if [Status] = 5 then "Shipped"
+				        else if [Status] = 6 then "Cancelled"
+				        else "Unknown", type text),
+				
+				    RemovedHelperColumns = Table.RemoveColumns(AddedOrderStatus, {"Status"})
+				in
+				    RemovedHelperColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,59 @@
+table 'SalesLT CustomerAddress'
+	lineageTag: b747c165-3729-46fc-96f1-bb99425b7fa3
+
+	column CustomerID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: db9a1430-f6c3-40c9-993a-93c850ef5663
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AddressID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 6a4e9d10-ff45-4ddb-bf6e-bf41c1937739
+		summarizeBy: none
+		sourceColumn: AddressID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AddressType
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 22f28663-b811-455f-932b-f2eed096959a
+		summarizeBy: none
+		sourceColumn: AddressType
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 07f106c3-77bc-4f41-814a-06e74a944bc4
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9eca9ee7-a7e2-4f01-b42e-1f434bf49561
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT CustomerAddress' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_CustomerAddress = Source{[Schema="SalesLT",Item="CustomerAddress"]}[Data]
+				in
+				    SalesLT_CustomerAddress
+
+	annotation PBI_ResultType = Table
+

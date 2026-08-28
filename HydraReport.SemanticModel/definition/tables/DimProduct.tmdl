@@ -1,0 +1,240 @@
+table DimProduct
+	lineageTag: c7869b9f-1f76-4d41-9db1-d1a12aa4c178
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		lineageTag: c4105fda-3bd6-4274-b49b-1c10c44be8c6
+		summarizeBy: count
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: 46e88594-45cf-4cf0-8f21-af67d53872de
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductNumber
+		dataType: string
+		lineageTag: d71f9e64-5e8b-4b03-baa4-8a552c6b3b65
+		summarizeBy: none
+		sourceColumn: ProductNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModelName
+		dataType: string
+		lineageTag: c4272b77-7eca-4cd1-b30c-dc5ac8cb7554
+		summarizeBy: none
+		sourceColumn: ModelName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryName
+		dataType: string
+		lineageTag: a4ae4aaf-d2ee-483b-9850-76251ee1b6a4
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubcategoryName
+		dataType: string
+		lineageTag: a614c8e2-cdba-4a03-8d2d-59d93b381005
+		summarizeBy: none
+		sourceColumn: SubcategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Color
+		dataType: string
+		lineageTag: 8639c762-11b9-42e0-b239-41a5e8486f13
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column Size
+		dataType: string
+		lineageTag: 36ba39db-292e-4911-af44-545fa2145ee2
+		summarizeBy: none
+		sourceColumn: Size
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weight
+		dataType: double
+		lineageTag: 489c9b11-04cc-4569-ab3b-8a4f1ae194b1
+		summarizeBy: sum
+		sourceColumn: Weight
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductModelID
+		dataType: int64
+		formatString: 0
+		lineageTag: ebeefb04-9119-4558-bcab-f3b04dc0ec82
+		summarizeBy: count
+		sourceColumn: ProductModelID
+
+		annotation SummarizationSetBy = Automatic
+
+	column StandardCost
+		dataType: double
+		lineageTag: cba13786-587f-4868-aed4-2ec17889712d
+		summarizeBy: sum
+		sourceColumn: StandardCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ListPrice
+		dataType: double
+		lineageTag: 04cbedae-ce2c-4821-a721-02d337302151
+		summarizeBy: sum
+		sourceColumn: ListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Margin
+		dataType: double
+		lineageTag: 7b68dacb-7511-40a2-9359-3fe3472f1c8a
+		summarizeBy: sum
+		sourceColumn: Margin
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LastModifiedDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f39c0d2b-9078-4374-b899-83ba5ea10208
+		summarizeBy: none
+		sourceColumn: LastModifiedDate
+
+		variation Variation
+			isDefault
+			relationship: 48d166dc-e0f0-4f3c-a0b5-e93629e7bba8
+			defaultHierarchy: LocalDateTable_be8dc6bd-bd6b-4e7e-9fd9-39882adef4e4.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column MarginPercent
+		dataType: double
+		lineageTag: ca6e10e3-0f80-4821-801d-abaf1a2e8188
+		summarizeBy: sum
+		sourceColumn: MarginPercent
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductStatus
+		dataType: string
+		lineageTag: 0bf22f31-4c18-4b57-8df1-0c2a5b860ddf
+		summarizeBy: none
+		sourceColumn: ProductStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column SellStartDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a15339c4-881d-4e7a-a312-07c97e3b1eec
+		summarizeBy: none
+		sourceColumn: SellStartDate
+
+		variation Variation
+			isDefault
+			relationship: 35bc7e34-1edd-4976-adc2-89998650ecbf
+			defaultHierarchy: LocalDateTable_9be69922-17c4-4e21-a1b6-24223dc45b41.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column SellEndDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0c6d2b6c-761a-40d2-9f9c-c68af12d82c9
+		summarizeBy: none
+		sourceColumn: SellEndDate
+
+		variation Variation
+			isDefault
+			relationship: bca589ac-6482-48fc-a80a-3fba2c89561a
+			defaultHierarchy: LocalDateTable_76a5b3e2-5ec4-44b1-a056-8310b6bda5cf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DiscontinuedDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2f08f2fa-7821-4a20-a707-bc49c029950f
+		summarizeBy: none
+		sourceColumn: DiscontinuedDate
+
+		variation Variation
+			isDefault
+			relationship: a27c005e-b162-4007-bb82-e8593c8967fe
+			defaultHierarchy: LocalDateTable_c9522942-589b-4458-8a1a-1a7ce181ea9d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ProductCategoryID
+		dataType: int64
+		formatString: 0
+		lineageTag: 1b6a8f85-4278-4644-9b8e-3c5aa002d1b9
+		summarizeBy: none
+		sourceColumn: ProductCategoryID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryLevel
+		dataType: string
+		lineageTag: b64dbeb5-ad63-4987-a294-33ed5dc27dc1
+		summarizeBy: none
+		sourceColumn: CategoryLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimProduct = m
+		mode: import
+		source =
+				let
+				    Source = Stg_Product,
+				
+				    MergedModel = Table.NestedJoin(Source, {"ProductModelID"}, Stg_ProductModel, {"ProductModelID"}, "ModelData", JoinKind.LeftOuter),
+				    ExpandedModel = Table.ExpandTableColumn(MergedModel, "ModelData", {"ModelName"}, {"ModelName"}),
+				
+				    MergedCategory = Table.NestedJoin(ExpandedModel, {"ProductCategoryID"}, Stg_ProductCategory, {"ProductCategoryID"}, "CategoryData", JoinKind.LeftOuter),
+				    ExpandedCategory = Table.ExpandTableColumn(MergedCategory, "CategoryData",
+				        {"SubcategoryName", "CategoryName", "CategoryLevel"},
+				        {"SubcategoryName", "CategoryName", "CategoryLevel"}),
+				
+				    ReorderedColumns = Table.ReorderColumns(ExpandedCategory, {
+				        "ProductID", "ProductName", "ProductNumber", "ModelName", "CategoryName", "SubcategoryName",
+				        "Color", "Size", "Weight", "StandardCost", "ListPrice", "Margin", "MarginPercent",
+				        "ProductStatus", "SellStartDate", "SellEndDate", "DiscontinuedDate", "ProductCategoryID"
+				    })
+				in
+				    ReorderedColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

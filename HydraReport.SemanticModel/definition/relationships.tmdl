@@ -1,0 +1,62 @@
+relationship b00e1c0b-3f56-40bc-9af1-b63167a6e109
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimCustomer.LastModifiedDate
+	toColumn: LocalDateTable_28d2b750-662d-4a1d-9ce7-fe347623584e.Date
+
+relationship 5d77fc72-b5db-45c8-9501-b9d6a1fa8830
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.Date
+	toColumn: LocalDateTable_54d7e770-3f2b-4dcc-b6f5-2aa0f0fecae2.Date
+
+relationship 47fc700e-74f1-4b47-80e3-9fda40191949
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FactSales.OrderDate
+	toColumn: LocalDateTable_30802b97-3af6-44b8-b680-2b69b5134315.Date
+
+relationship ba2066af-6a02-4c8d-8f84-6d20a3841533
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FactSales.DueDate
+	toColumn: LocalDateTable_ed2c7c66-0bf8-4734-8d73-331c9903148a.Date
+
+relationship cbfba96d-95da-4d68-9e36-968d30a2364c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FactSales.ShipDate
+	toColumn: LocalDateTable_5bc40643-958b-477c-82ca-f26b32567b55.Date
+
+relationship 48d166dc-e0f0-4f3c-a0b5-e93629e7bba8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimProduct.LastModifiedDate
+	toColumn: LocalDateTable_be8dc6bd-bd6b-4e7e-9fd9-39882adef4e4.Date
+
+relationship 35bc7e34-1edd-4976-adc2-89998650ecbf
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimProduct.SellStartDate
+	toColumn: LocalDateTable_9be69922-17c4-4e21-a1b6-24223dc45b41.Date
+
+relationship bca589ac-6482-48fc-a80a-3fba2c89561a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimProduct.SellEndDate
+	toColumn: LocalDateTable_76a5b3e2-5ec4-44b1-a056-8310b6bda5cf.Date
+
+relationship a27c005e-b162-4007-bb82-e8593c8967fe
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimProduct.DiscontinuedDate
+	toColumn: LocalDateTable_c9522942-589b-4458-8a1a-1a7ce181ea9d.Date
+
+relationship AutoDetected_8f0040fa-c6a6-4f08-ab43-c30be380ca59
+	fromColumn: FactSales.CustomerID
+	toColumn: DimCustomer.CustomerID
+
+relationship AutoDetected_14ef58d2-7f3a-4b1f-8e4a-1d878ae8f794
+	fromColumn: FactSales.ProductCategoryID
+	toColumn: DimProductCategory.ProductCategoryID
+
+relationship AutoDetected_b0c82c8c-9438-4890-be01-527ae4d9217a
+	fromColumn: DimProduct.ProductCategoryID
+	toColumn: DimProductCategory.ProductCategoryID
+
+relationship AutoDetected_34298eaa-d38d-4e7b-8cce-d73f9cf9efdc
+	isActive: false
+	fromColumn: FactSales.ProductID
+	toColumn: DimProduct.ProductID
+

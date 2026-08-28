@@ -1,0 +1,149 @@
+table 'SalesLT Customer'
+	lineageTag: b460b0b9-51b2-4d6c-b71d-16e163e6563d
+
+	column CustomerID
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 8cf77f8d-5ad4-445e-8120-628660cfe567
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column NameStyle
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: c75a9e73-8061-4e9a-8927-fdf8b3355279
+		summarizeBy: none
+		sourceColumn: NameStyle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Title
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 60780e31-0eb7-4bd2-ad7a-b6bb817ce18d
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 192437a0-319c-489d-a0d5-b2136271154a
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MiddleName
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: f5eb3b28-af82-4f90-aa58-e973ee0ca00c
+		summarizeBy: none
+		sourceColumn: MiddleName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 423bdbc6-7fa0-491c-b932-fcd9d1cbcdbe
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Suffix
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: b348a4d5-1ed5-4541-af9e-444e4d4ebb95
+		summarizeBy: none
+		sourceColumn: Suffix
+
+		annotation SummarizationSetBy = Automatic
+
+	column CompanyName
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9b6bd3a3-6e2b-4011-84f1-939b1cee7885
+		summarizeBy: none
+		sourceColumn: CompanyName
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesPerson
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: bad91aa0-35ab-426a-8b39-a3ed391bf383
+		summarizeBy: none
+		sourceColumn: SalesPerson
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailAddress
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: a5117c64-2b98-4b87-a33c-1d531fcb9ded
+		summarizeBy: none
+		sourceColumn: EmailAddress
+
+		annotation SummarizationSetBy = Automatic
+
+	column Phone
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: a8d26e6a-64a3-4ce6-ad86-684a83a45f62
+		summarizeBy: none
+		sourceColumn: Phone
+
+		annotation SummarizationSetBy = Automatic
+
+	column PasswordHash
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: caa6a555-fe97-4f60-a6b4-b7b5e5f3807b
+		summarizeBy: none
+		sourceColumn: PasswordHash
+
+		annotation SummarizationSetBy = Automatic
+
+	column PasswordSalt
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: dabae3cd-116e-45fd-8c03-9e532be714f1
+		summarizeBy: none
+		sourceColumn: PasswordSalt
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowguid
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 24f60a77-ad9a-4f7c-b02f-8a45058cfe7b
+		summarizeBy: none
+		sourceColumn: rowguid
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDate
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 65e89b6d-31b2-4d41-a51e-e2e42a3e7520
+		summarizeBy: none
+		sourceColumn: ModifiedDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SalesLT Customer' = m
+		mode: directQuery
+		source =
+				let
+				    Source = Sql.Database("hydraaserver.database.windows.net", "hydradatabase"),
+				    SalesLT_Customer = Source{[Schema="SalesLT",Item="Customer"]}[Data]
+				in
+				    SalesLT_Customer
+
+	annotation PBI_ResultType = Table
+
