@@ -1,19 +1,5 @@
 # Fabric notebook source
 
-# METADATA ********************
-
-# META {
-# META   "kernel_info": {
-# META     "name": "synapse_pyspark"
-# META   },
-# META   "dependencies": {
-# META     "lakehouse": {
-# META       "default_lakehouse": "31dbc1ae-cdad-4fb1-803e-41bc959a88d2",
-# META       "default_lakehouse_name": "HYDRA_SILVER_LK",
-# META       "default_lakehouse_workspace_id": "53747e8d-990c-48d0-a357-52aa3cf64833"
-# META     }
-# META   }
-# META }
 
 # MARKDOWN ********************
 
@@ -24,13 +10,6 @@
 # definition as TMSL/BIM (Semantic Link) and reads `model.expressions[]` plus
 # every table partition whose `source.type == "m"`. Direct Lake / DAX partitions
 # have no M and are skipped.
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
 
 # PARAMETERS CELL ********************
 
