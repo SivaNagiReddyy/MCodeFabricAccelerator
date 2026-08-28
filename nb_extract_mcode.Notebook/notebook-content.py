@@ -4,12 +4,15 @@
 # MARKDOWN ********************
 
 # ## nb_extract_mcode
-# Extracts every Power Query (M) query from a semantic model into one file per
-# query, named after the query:  `<output_dir>/<QueryName>.m`
+# Extracts Power Query (M) *transformation* queries from a semantic model into
+# one file per query, named after the query:  `<output_subdir>/<QueryName>.m`
 # Model-agnostic - set `dataset` to any semantic model. Pulls the model
 # definition as TMSL/BIM (Semantic Link) and reads `model.expressions[]` plus
-# every table partition whose `source.type == "m"`. Direct Lake / DAX partitions
-# have no M and are skipped.
+# every table partition whose `source.type == "m"`.
+# With `transforms_only = True` (default) it keeps only queries that actually
+# transform data (they call `Table.*`) and drops raw source-table reads
+# (`Sql.Database` + navigation), parameters, connection-only functions and
+# auto-generated `Errors in *` queries. Direct Lake / DAX partitions have no M.
 
 # PARAMETERS CELL ********************
 
@@ -17,6 +20,7 @@ dataset          = "HydraReport"       # semantic model: display name or GUID
 workspace         = ""                  # blank = current workspace; else name or GUID (for the model fetch)
 target_lakehouse  = "HYDRA_BRONZE_LK"   # lakehouse to write the .m files into
 output_subdir     = "Files/m_extract"   # path under that lakehouse
+transforms_only   = True                # True = only queries that call Table.* ; skip raw source reads / params / functions
 overwrite         = True
 
 # METADATA ********************
@@ -103,10 +107,28 @@ def extract_m(doc):
 
 # CELL ********************
 
-# ---- 3. write one <QueryName>.m per query -------------------------------
-queries = {k: v for k, v in extract_m(model_doc).items() if v and v.strip()}
+# ---- 3. filter to real Power Query transformations, then write one .m each ----
+all_m = {k: v for k, v in extract_m(model_doc).items() if v and v.strip()}
+
+
+def is_pq_transform(code):
+    """A real transformation query calls Table.* ; raw source reads
+    (Sql.Database + navigation), parameters and connection-only functions do not."""
+    return bool(re.search(r"\bTable\.[A-Za-z]\w*\s*\(", code))
+
+
+if transforms_only:
+    queries = {k: v for k, v in all_m.items()
+               if is_pq_transform(v) and not k.startswith("Errors in ")}
+else:
+    queries = all_m
+
+dropped = sorted(set(all_m) - set(queries))
+if dropped:
+    print("skipped {} non-transform quer{}: {}".format(
+        len(dropped), "y" if len(dropped) == 1 else "ies", ", ".join(dropped)))
 if not queries:
-    raise ValueError("no M queries found in '{}' (Direct Lake / DAX-only model?)".format(dataset))
+    raise ValueError("no M transformation queries found in '{}'".format(dataset))
 
 # resolve the target lakehouse by name -> absolute abfss path
 # (same pattern as nb_generic_layer_load / nb_log_collector; a bare 'Files/...'
