@@ -6,9 +6,9 @@ runs via `spark.sql()`, and keeps that SQL correct.
 
 | # | Agent | Form | Input | Output |
 |---|-------|------|-------|--------|
-| 1 | Extract M | [`nb_extract_mcode`](nb_extract_mcode.Notebook/notebook-content.py) - deterministic Python | any semantic model | `HYDRA_BRONZE_LK/Files/m_extract/<QueryName>.m` |
+| 1 | Extract M | `nb_extract_mcode` - deterministic Python **(removed, to be regenerated)** | any semantic model | `HYDRA_BRONZE_LK/Files/m_extract/<QueryName>.m` |
 | 2a | Analyze each M -> build plan | [`nb_m_analyze`](nb_m_analyze.Notebook/notebook-content.py) - per-query LLM calls (gateway LLM via `nb_bedrock`) | `Files/m_extract/*.m` | `Files/analysis/queries/<Query>.json` (one per M code), `analysis.json`, `analysis.md` |
-| 2b | Full analysis -> Spark SQL + control seed | [`nb_m_to_sql`](nb_m_to_sql.Notebook/notebook-content.py) - **deepagents** agent (gateway LLM via `nb_bedrock`) | `analysis.json` + `queries/*.json` + `Files/m_extract/*.m` | `Files/sql/silver/*.sql`, `Files/sql/gold/*.sql`, `layering.md`, `Files/sql/pipeline_control.csv`, `Files/sql/pipeline_control_insert.sql` |
+| 2b | Full analysis -> Spark SQL + control seed | `nb_m_to_sql` - **deepagents** agent (gateway LLM via `nb_bedrock`) **(removed, to be regenerated)** | `analysis.json` + `queries/*.json` + `Files/m_extract/*.m` | `Files/sql/silver/*.sql`, `Files/sql/gold/*.sql`, `layering.md`, `Files/sql/pipeline_control.csv`, `Files/sql/pipeline_control_insert.sql` |
 | 3 | Read log errors, fix SQL | LLM (not built) | `metadata.pipeline_control_log` + `sql/**` | patched `sql/**` |
 | 4 | Validate M vs Spark SQL | LLM + Spark (not built) | M result vs `spark.sql()` result | validation report |
 
@@ -21,10 +21,13 @@ workspace **folder** called `agents`:
 agents/
   README.md
   nb_bedrock.Notebook/          shared LLM client  (%run'd by the agents)
-  nb_extract_mcode.Notebook/    agent 1
   nb_m_analyze.Notebook/        agent 2a
-  nb_m_to_sql.Notebook/         agent 2b
 ```
+
+> **Temporarily removed.** `nb_extract_mcode` (agent 1) and `nb_m_to_sql`
+> (agent 2b) were deleted in commit `a5dde8f` and will be regenerated. The
+> sections below still describe their intended behaviour - treat them as the
+> spec. Last good copies: `git show 064f2d0:agents/nb_m_to_sql.Notebook/notebook-content.py`.
 
 The runtime notebooks stay at the repo root because the data pipelines invoke
 them: [`nb_generic_layer_load`](../nb_generic_layer_load.Notebook/notebook-content.py)
@@ -40,7 +43,7 @@ model. 2a runs the deterministic regex pre-pass (name-based layer, raw Bronze
 refs via `fnGetSalesLTTable("X")` / `Item="X"`, M->M deps) and feeds those facts
 to the LLM as ground truth. Both halves get their model from `nb_bedrock`.
 
-## Agent 2a - `nb_m_analyze`  (analyzer, no SQL)
+## Agent 2a - `nb_m_analyze`  (analyzer, no SQL)  -  *present*
 
 Analyzes **one M query at a time** - each M code gets its own analysis file -
 then merges them into a single build plan:
@@ -72,7 +75,7 @@ key_columns from `grain`, batch_group, is_active). Cell 7 validates (duplicate
 names, missing `output_columns`, **no gold entry reads Bronze**) and raises so
 you fix it before any SQL exists.
 
-## Agent 2b - `nb_m_to_sql`  (converter)
+## Agent 2b - `nb_m_to_sql`  (converter)  -  *removed, spec only*
 
 Reads the **complete analysis** - `analysis.json`, every
 `queries/<Query>.json`, and the `m/*.m` source - and re-validates the plan on
