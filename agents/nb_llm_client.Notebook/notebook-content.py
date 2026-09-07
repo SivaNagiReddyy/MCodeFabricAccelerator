@@ -153,7 +153,8 @@ def get_chat_model(
     model=None,
     temperature=None,
     max_tokens=None,
-    max_retries=3,
+    max_retries=2,
+    timeout=120,
     allow_openai_fallback=False,
     verbose=True,
     **model_kwargs,
@@ -213,11 +214,15 @@ def get_chat_model(
                   "- using the OpenAI-compatible route")
             provider = "openai"
         else:
-            llm = ChatAnthropic(**common)           # hits <base_url>/v1/messages
+            # default_request_timeout, not timeout - without it the Anthropic SDK
+            # waits ~10 min per attempt, so a blocked call looks like a hang.
+            llm = ChatAnthropic(default_request_timeout=timeout,
+                                **common)           # hits <base_url>/v1/messages
 
     if provider in ("openai", "openai_compatible", "litellm"):
         from langchain_openai import ChatOpenAI
-        llm = ChatOpenAI(**common)                   # hits <base_url>/chat/completions
+        llm = ChatOpenAI(timeout=timeout,
+                         **common)                   # hits <base_url>/chat/completions
     elif provider != "anthropic":
         raise ValueError(f"[nb_llm_client] unknown provider {provider!r} (use 'anthropic' or 'openai')")
 
