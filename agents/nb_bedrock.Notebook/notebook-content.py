@@ -12,7 +12,7 @@
 
 # ## nb_bedrock  -  shared LLM client for every agent
 #
-# One reusable factory, **`get_chat_model(...)`**, returning a LangChain chat
+# One reusable factory, **`get_chat_model(...)`**, returning a LangChain chats
 # model ready for `deepagents`. Every agent notebook (`nb_m_analyze`,
 # `nb_m_to_sql`, later 3/4) does `%run nb_bedrock` then calls this one function,
 # so credential handling and model wiring live in exactly one place.
