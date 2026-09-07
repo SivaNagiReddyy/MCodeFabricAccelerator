@@ -11,24 +11,20 @@
 # MARKDOWN ********************
 
 # ## nb_llm_client  -  shared LLM client for every agent
-#
-# One reusable factory, **`get_chat_model(...)`**, returning a LangChain chats
+# # One reusable factory, **`get_chat_model(...)`**, returning a LangChain chats
 # model ready for `deepagents`. Every agent notebook (`nb_m_analyze`,
 # `nb_m_to_sql`, later 3/4) does `%run nb_llm_client` then calls this one function,
 # so credential handling and model wiring live in exactly one place.
-#
-# The LLM here is reached through an **Anthropic-/OpenAI-compatible gateway**
+# # The LLM here is reached through an **Anthropic-/OpenAI-compatible gateway**
 # (e.g. a LiteLLM proxy in front of Bedrock). You provide three things once -
 # `base_url`, `api_key`, `model` - and they are saved **inside Fabric** as a
 # JSON file in a lakehouse (`<lakehouse>/Files/config/llm_config.json`), which is
 # OneLake-permissioned and is **not** part of the Git repo. No Key Vault needed.
-#
-# ### One-time setup
+# # ### One-time setup
 # Open this notebook, set the `cfg_*` parameters (paste your gateway key into
 # `cfg_api_key`), set `write_config = True`, run. It writes `llm_config.json`.
 # Set `write_config = False` again afterwards.
-#
-# ### How an agent notebook uses it
+# # ### How an agent notebook uses it
 # ```python
 # %run nb_llm_client
 # ```
@@ -44,15 +40,13 @@
 # `%run` executes this notebook's cells in the caller's session, so
 # `get_chat_model` (and `json`, `os`) become available to the caller. The
 # `write_config` / `self_test` cells are guarded and do nothing under `%run`.
-#
-# ### Value resolution per field (first wins)
+# # ### Value resolution per field (first wins)
 # 1. explicit argument to `get_chat_model(...)`
 # 2. the saved `llm_config.json` in the lakehouse
 # 3. environment variables - `base_url`: `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL`;
 #    `api_key`: `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`;
 #    `model`: `LLM_MODEL`
-#
-# ### Prerequisites
+# # ### Prerequisites
 # the **py-packages** environment attached - `langchain-anthropic` for
 # `provider="anthropic"` (native Claude, default), `langchain-openai` for
 # `provider="openai"` (OpenAI-compatible route).

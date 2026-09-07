@@ -11,41 +11,33 @@
 # MARKDOWN ********************
 
 # ## nb_m_analyze  -  Agent 2a: analyze each M query, emit a build plan
-#
-# First of the two M -> Spark SQL agents. It writes **no SQL**.
-#
-# It reads the Power Query (M) files produced by **nb_extract_mcode**
+# # First of the two M -> Spark SQL agents. It writes **no SQL**.
+# # It reads the Power Query (M) files produced by **nb_extract_mcode**
 # (`<m_lakehouse>/<m_subdir>/*.m`) and, **one M query at a time**, asks the LLM
 # (via **nb_llm_client**) to describe what that query must become. Each M file gets
 # its own analysis file:
-#
-# ```
+# # ```
 # Files/analysis/queries/<QueryName>.json     <- one per M code
 # Files/analysis/analysis.json                <- merged, flattened build plan
 # Files/analysis/analysis.md                  <- human-readable summary
 # ```
-#
-# Per query the LLM returns the table(s) that query becomes: normally one, but a
+# # Per query the LLM returns the table(s) that query becomes: normally one, but a
 # `Dim*` / `Fact*` query that pulls raw Bronze inline also returns the new
 # **silver split tables** its raw pulls must be carved into. A merge step then
 # flattens every per-query result into `analysis.json`, de-duplicating split
 # tables that two gold queries share (unioning their columns).
-#
-# For every table in the plan the notebook also computes a **`control` block** -
+# # For every table in the plan the notebook also computes a **`control` block** -
 # the complete `metadata.pipeline_control` row (layer, domain, object_name,
 # source_type, sql_file_path, sql_lakehouse, target_*, load_type, key_columns,
 # batch_group, is_active). **nb_m_to_sql** (Agent 2b) reads the whole analysis,
 # generates the `.sql` files, and emits the control CSV straight from these
 # blocks - it never re-derives them.
-#
-# Splitting analysis from conversion lets you review / hand-edit the plan before
+# # Splitting analysis from conversion lets you review / hand-edit the plan before
 # any SQL exists, and lets each half use its own model.
-#
-# ### Portability
+# # ### Portability
 # Every lakehouse is resolved by **name** at run time; every target is a
 # parameter. Deploy into any workspace and point the parameters at its lakehouses.
-#
-# ### Prerequisites
+# # ### Prerequisites
 # - the **py-packages** environment attached (`deepagents`, `langchain-anthropic`),
 # - **nb_llm_client** in the same workspace, and its `llm_config.json` written once
 #   (gateway `base_url` / `api_key` / `model`, saved in a lakehouse - see nb_llm_client).
