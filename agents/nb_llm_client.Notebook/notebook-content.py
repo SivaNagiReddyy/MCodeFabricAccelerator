@@ -154,6 +154,7 @@ def get_chat_model(
     temperature=None,
     max_tokens=None,
     max_retries=3,
+    allow_openai_fallback=False,
     verbose=True,
     **model_kwargs,
 ):
@@ -196,11 +197,20 @@ def get_chat_model(
         try:
             from langchain_anthropic import ChatAnthropic
         except ModuleNotFoundError:
-            # the gateway is OpenAI-compatible too, and langchain-openai ships in
-            # py-packages already - degrade instead of failing the whole run.
-            print("[nb_llm_client] langchain-anthropic not installed; falling back to the "
-                  "OpenAI-compatible route. Republish the py-packages environment to get "
-                  "the native Anthropic client, or set provider='openai' to silence this.")
+            if not allow_openai_fallback:
+                raise RuntimeError(
+                    "[nb_llm_client] langchain-anthropic is not installed in this session.\n"
+                    "  preferred : republish the py-packages environment (it pins\n"
+                    "              langchain-anthropic) and re-attach it to this notebook.\n"
+                    "  right now : put  %pip install langchain-anthropic  in the FIRST cell\n"
+                    "              of the calling notebook, run it, then re-run.\n"
+                    "  last resort: get_chat_model(..., allow_openai_fallback=True) uses the\n"
+                    "              gateway's OpenAI-compatible route instead - not recommended\n"
+                    "              for a Claude model driving deepagents (tool calls get\n"
+                    "              translated through the OpenAI schema)."
+                ) from None
+            print("[nb_llm_client] langchain-anthropic missing and allow_openai_fallback=True "
+                  "- using the OpenAI-compatible route")
             provider = "openai"
         else:
             llm = ChatAnthropic(**common)           # hits <base_url>/v1/messages
