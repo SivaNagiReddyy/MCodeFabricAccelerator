@@ -193,12 +193,22 @@ def get_chat_model(
                   max_retries=max_retries, **model_kwargs)
 
     if provider == "anthropic":
-        from langchain_anthropic import ChatAnthropic
-        llm = ChatAnthropic(**common)               # hits <base_url>/v1/messages
-    elif provider in ("openai", "openai_compatible", "litellm"):
+        try:
+            from langchain_anthropic import ChatAnthropic
+        except ModuleNotFoundError:
+            # the gateway is OpenAI-compatible too, and langchain-openai ships in
+            # py-packages already - degrade instead of failing the whole run.
+            print("[nb_llm_client] langchain-anthropic not installed; falling back to the "
+                  "OpenAI-compatible route. Republish the py-packages environment to get "
+                  "the native Anthropic client, or set provider='openai' to silence this.")
+            provider = "openai"
+        else:
+            llm = ChatAnthropic(**common)           # hits <base_url>/v1/messages
+
+    if provider in ("openai", "openai_compatible", "litellm"):
         from langchain_openai import ChatOpenAI
         llm = ChatOpenAI(**common)                   # hits <base_url>/chat/completions
-    else:
+    elif provider != "anthropic":
         raise ValueError(f"[nb_llm_client] unknown provider {provider!r} (use 'anthropic' or 'openai')")
 
     if verbose:
