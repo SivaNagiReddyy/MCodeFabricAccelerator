@@ -3,4 +3,5 @@ dependencies:
       - semantic-link-labs==0.17.0
       - deepagents==0.7.8
       - langchain-openai==1.6.0
+      - langchain-anthropic>=1.0.0,<2.0.0
       - pydantic==2.14.0b1
