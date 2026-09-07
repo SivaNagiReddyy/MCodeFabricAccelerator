@@ -16,7 +16,7 @@
 #
 # It reads the Power Query (M) files produced by **nb_extract_mcode**
 # (`<m_lakehouse>/<m_subdir>/*.m`) and, **one M query at a time**, asks the LLM
-# (via **nb_bedrock**) to describe what that query must become. Each M file gets
+# (via **nb_llm_client**) to describe what that query must become. Each M file gets
 # its own analysis file:
 #
 # ```
@@ -47,8 +47,8 @@
 #
 # ### Prerequisites
 # - the **py-packages** environment attached (`deepagents`, `langchain-anthropic`),
-# - **nb_bedrock** in the same workspace, and its `llm_config.json` written once
-#   (gateway `base_url` / `api_key` / `model`, saved in a lakehouse - see nb_bedrock).
+# - **nb_llm_client** in the same workspace, and its `llm_config.json` written once
+#   (gateway `base_url` / `api_key` / `model`, saved in a lakehouse - see nb_llm_client).
 
 # PARAMETERS CELL ********************
 
@@ -74,7 +74,7 @@ default_load_type     = "Full"             # 'Full' | 'Incremental'
 silver_batch_group    = 1
 gold_batch_group      = 2
 
-# --- LLM: resolved by nb_bedrock from the saved llm_config.json ---------
+# --- LLM: resolved by nb_llm_client from the saved llm_config.json ---------
 llm_config_lakehouse = "HYDRA_BRONZE_LK"          # lakehouse holding Files/config/llm_config.json
 llm_config_path      = "Files/config/llm_config.json"
 llm_provider         = ""        # "" = use the config file; else "anthropic" | "openai"
@@ -165,7 +165,7 @@ display(pd.DataFrame(list(facts.values())))
 # CELL ********************
 
 # ---- 3. load the shared LLM factory ---------------------------------
-%run nb_bedrock
+%run nb_llm_client
 
 # METADATA ********************
 

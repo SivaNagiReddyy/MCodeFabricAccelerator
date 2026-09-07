@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "nb_bedrock"
+    "displayName": "nb_llm_client"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "1f653696-88dd-4f7e-9ac7-c523dd6244f5"
+    "logicalId": "39ef24e0-83aa-44ec-bee7-9cbbb31d388d"
   }
 }

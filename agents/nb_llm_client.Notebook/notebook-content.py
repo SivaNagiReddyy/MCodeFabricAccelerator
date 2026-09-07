@@ -10,11 +10,11 @@
 
 # MARKDOWN ********************
 
-# ## nb_bedrock  -  shared LLM client for every agent
+# ## nb_llm_client  -  shared LLM client for every agent
 #
 # One reusable factory, **`get_chat_model(...)`**, returning a LangChain chats
 # model ready for `deepagents`. Every agent notebook (`nb_m_analyze`,
-# `nb_m_to_sql`, later 3/4) does `%run nb_bedrock` then calls this one function,
+# `nb_m_to_sql`, later 3/4) does `%run nb_llm_client` then calls this one function,
 # so credential handling and model wiring live in exactly one place.
 #
 # The LLM here is reached through an **Anthropic-/OpenAI-compatible gateway**
@@ -30,7 +30,7 @@
 #
 # ### How an agent notebook uses it
 # ```python
-# %run nb_bedrock
+# %run nb_llm_client
 # ```
 # ```python
 # llm = get_chat_model(
@@ -113,7 +113,7 @@ def read_llm_config(lakehouse=None, path=None):
         txt = _fsutil().fs.head(_config_full_path(lakehouse, path), 64 * 1024)
         return json.loads(txt)
     except Exception as e:                           # noqa: BLE001
-        print(f"[nb_bedrock] no config at {lakehouse}/{path} ({type(e).__name__}); "
+        print(f"[nb_llm_client] no config at {lakehouse}/{path} ({type(e).__name__}); "
               "using explicit args / env vars")
         return {}
 
@@ -124,12 +124,12 @@ def write_llm_config(payload, lakehouse=None, path=None):
     path = path or LLM_CONFIG_PATH
     missing = [k for k in ("base_url", "api_key", "model") if not payload.get(k)]
     if missing:
-        raise ValueError(f"[nb_bedrock] cannot write config - missing: {', '.join(missing)}")
+        raise ValueError(f"[nb_llm_client] cannot write config - missing: {', '.join(missing)}")
     full = _config_full_path(lakehouse, path)
     _fsutil().fs.mkdirs(full.rsplit("/", 1)[0])
     _fsutil().fs.put(full, json.dumps(payload, indent=2) + "\n", True)
     k = payload["api_key"]
-    print(f"[nb_bedrock] wrote {lakehouse}/{path}  "
+    print(f"[nb_llm_client] wrote {lakehouse}/{path}  "
           f"(provider={payload.get('provider', 'anthropic')}, model={payload['model']}, "
           f"key=***{k[-4:] if len(k) >= 4 else '?'})")
     return full
@@ -190,7 +190,7 @@ def get_chat_model(
 
     if not (base_url and api_key and model):
         raise RuntimeError(
-            "[nb_bedrock] missing base_url / api_key / model - run this notebook once "
+            "[nb_llm_client] missing base_url / api_key / model - run this notebook once "
             "with write_config = True, or pass them explicitly to get_chat_model().")
 
     base_url = base_url.rstrip("/")
@@ -205,10 +205,10 @@ def get_chat_model(
         from langchain_openai import ChatOpenAI
         llm = ChatOpenAI(**common)                   # hits <base_url>/chat/completions
     else:
-        raise ValueError(f"[nb_bedrock] unknown provider {provider!r} (use 'anthropic' or 'openai')")
+        raise ValueError(f"[nb_llm_client] unknown provider {provider!r} (use 'anthropic' or 'openai')")
 
     if verbose:
-        print(f"[nb_bedrock] {provider} chat model ready: model={model} "
+        print(f"[nb_llm_client] {provider} chat model ready: model={model} "
               f"base_url={base_url} key=***{api_key[-4:] if len(api_key) >= 4 else '?'}")
     return llm
 
@@ -236,10 +236,10 @@ if write_config:
 else:
     _existing = read_llm_config()
     if _existing:
-        print(f"[nb_bedrock] config present: provider={_existing.get('provider')} "
+        print(f"[nb_llm_client] config present: provider={_existing.get('provider')} "
               f"model={_existing.get('model')} base_url={_existing.get('base_url')}")
     else:
-        print("[nb_bedrock] no config yet - set cfg_* + write_config = True and re-run")
+        print("[nb_llm_client] no config yet - set cfg_* + write_config = True and re-run")
 
 # METADATA ********************
 

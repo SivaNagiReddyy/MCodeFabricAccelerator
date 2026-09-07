@@ -7,8 +7,8 @@ runs via `spark.sql()`, and keeps that SQL correct.
 | # | Agent | Form | Input | Output |
 |---|-------|------|-------|--------|
 | 1 | Extract M | `nb_extract_mcode` - deterministic Python **(removed, to be regenerated)** | any semantic model | `HYDRA_BRONZE_LK/Files/m_extract/<QueryName>.m` |
-| 2a | Analyze each M -> build plan | [`nb_m_analyze`](nb_m_analyze.Notebook/notebook-content.py) - per-query LLM calls (gateway LLM via `nb_bedrock`) | `Files/m_extract/*.m` | `Files/analysis/queries/<Query>.json` (one per M code), `analysis.json`, `analysis.md` |
-| 2b | Full analysis -> Spark SQL + control seed | `nb_m_to_sql` - **deepagents** agent (gateway LLM via `nb_bedrock`) **(removed, to be regenerated)** | `analysis.json` + `queries/*.json` + `Files/m_extract/*.m` | `Files/sql/silver/*.sql`, `Files/sql/gold/*.sql`, `layering.md`, `Files/sql/pipeline_control.csv`, `Files/sql/pipeline_control_insert.sql` |
+| 2a | Analyze each M -> build plan | [`nb_m_analyze`](nb_m_analyze.Notebook/notebook-content.py) - per-query LLM calls (gateway LLM via `nb_llm_client`) | `Files/m_extract/*.m` | `Files/analysis/queries/<Query>.json` (one per M code), `analysis.json`, `analysis.md` |
+| 2b | Full analysis -> Spark SQL + control seed | `nb_m_to_sql` - **deepagents** agent (gateway LLM via `nb_llm_client`) **(removed, to be regenerated)** | `analysis.json` + `queries/*.json` + `Files/m_extract/*.m` | `Files/sql/silver/*.sql`, `Files/sql/gold/*.sql`, `layering.md`, `Files/sql/pipeline_control.csv`, `Files/sql/pipeline_control_insert.sql` |
 | 3 | Read log errors, fix SQL | LLM (not built) | `metadata.pipeline_control_log` + `sql/**` | patched `sql/**` |
 | 4 | Validate M vs Spark SQL | LLM + Spark (not built) | M result vs `spark.sql()` result | validation report |
 
@@ -20,7 +20,7 @@ workspace **folder** called `agents`:
 ```
 agents/
   README.md
-  nb_bedrock.Notebook/          shared LLM client  (%run'd by the agents)
+  nb_llm_client.Notebook/          shared LLM client  (%run'd by the agents)
   nb_m_analyze.Notebook/        agent 2a
 ```
 
@@ -33,7 +33,7 @@ The runtime notebooks stay at the repo root because the data pipelines invoke
 them: [`nb_generic_layer_load`](../nb_generic_layer_load.Notebook/notebook-content.py)
 and [`nb_log_collector`](../nb_log_collector.Notebook/notebook-content.py).
 
-Nothing here references another notebook by path - `%run nb_bedrock` and the
+Nothing here references another notebook by path - `%run nb_llm_client` and the
 pipeline activities both resolve by **item name / id**, so the folder move is
 transparent to execution.
 
@@ -41,7 +41,7 @@ Agent 2 is split so the medallion plan can be reviewed / hand-edited (it is just
 `analysis.json`) before any SQL is generated, and so each half can use its own
 model. 2a runs the deterministic regex pre-pass (name-based layer, raw Bronze
 refs via `fnGetSalesLTTable("X")` / `Item="X"`, M->M deps) and feeds those facts
-to the LLM as ground truth. Both halves get their model from `nb_bedrock`.
+to the LLM as ground truth. Both halves get their model from `nb_llm_client`.
 
 ## Agent 2a - `nb_m_analyze`  (analyzer, no SQL)  -  *present*
 
@@ -97,13 +97,13 @@ it emits ONE `spark.sql()`-executable `SELECT`:
    **`pipeline_control_insert.sql`** straight from the plan's `control` blocks -
    nothing is re-derived.
 
-## Shared LLM client - `nb_bedrock`
+## Shared LLM client - `nb_llm_client`
 
 Both agents (and 3/4 later) get their model from **one** factory so credential
 handling lives in exactly one place:
 
 ```python
-%run nb_bedrock
+%run nb_llm_client
 llm = get_chat_model(config_lakehouse=..., config_path=..., temperature=..., max_tokens=...)
 ```
 
@@ -112,7 +112,7 @@ LiteLLM proxy in front of Bedrock). Its `base_url` / `api_key` / `model` are
 saved **inside Fabric** as `<lakehouse>/Files/config/llm_config.json` - OneLake,
 workspace-permissioned, and **not** in the Git repo. No Key Vault required.
 
-One-time setup: open `nb_bedrock`, fill the `cfg_*` parameters (paste the
+One-time setup: open `nb_llm_client`, fill the `cfg_*` parameters (paste the
 gateway key into `cfg_api_key`), set `write_config = True`, run, then set it
 back to `False`. Per-field resolution in `get_chat_model` is: explicit argument
 -> `llm_config.json` -> environment variable (`ANTHROPIC_BASE_URL` /
@@ -120,7 +120,7 @@ back to `False`. Per-field resolution in `get_chat_model` is: explicit argument
 (default) builds a `ChatAnthropic`; `provider="openai"` a `ChatOpenAI`.
 
 Prerequisites: the **py-packages** environment attached (`deepagents`,
-`langchain-anthropic`, `langchain-openai`), and `nb_bedrock` present in the
+`langchain-anthropic`, `langchain-openai`), and `nb_llm_client` present in the
 same workspace (`%run` resolves it by name).
 
 **Workspace-agnostic:** 2a records the medallion config into `analysis.json`;
